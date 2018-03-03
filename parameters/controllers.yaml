@@ -17,3 +17,10 @@ effort_trajectory_controller:
       # i: 0.0
       # d: 0.01
       # i_clamp: 1
+
+# Individual Position Controllers ---------------------------------------
+# Allows to send individual ROS msg of Float64 to each joint separately
+joint1_effort_controller:
+   type: effort_controllers/JointPositionController
+   joint: joint1
+   pid: {p: 100.0, i: 0.01, d: 10.0}
