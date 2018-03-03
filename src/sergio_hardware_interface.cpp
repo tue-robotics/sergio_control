@@ -26,7 +26,7 @@ SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_int
     // Optionally add more transmissions here
     else
     {
-      throw std::runtime_error("Invalid transmission type: " + transmission_info.type_);
+      throw std::runtime_error("Unsupported transmission type: " + transmission_info.type_);
     }
 
     if (!transmission)
@@ -111,6 +111,8 @@ void SergioHardwareInterface::registerTransmission(std::string transmission_name
 
     ROS_INFO("Registered state and command interface for joint '%s'", joint_info.name_.c_str());
   }
+
+  transmissions_.push_back(transmission);
 
   // Register transmissions
   actuator_to_joint_transmission_interface_.registerHandle(
