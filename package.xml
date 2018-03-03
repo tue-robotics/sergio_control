@@ -13,6 +13,7 @@
   <depend>controller_manager</depend>
   <depend>diagnostic_updater</depend>
   <depend>hardware_interface</depend>
+  <depend>transmission_interface</depend>
   <depend>roscpp</depend>
 
   <exec_depend>joint_state_controller</exec_depend>
