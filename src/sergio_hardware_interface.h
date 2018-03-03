@@ -4,9 +4,8 @@
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
 
-#include <transmission_interface/simple_transmission.h>
-#include <transmission_interface/differential_transmission.h>
 #include <transmission_interface/transmission_interface.h>
+#include <transmission_interface/transmission_info.h>
 
 #include "sergio_hardware_mapping.h"
 
@@ -60,32 +59,12 @@ private:
   //!
   transmission_interface::JointToActuatorEffortInterface joint_to_actuator_transmission_interface_;
 
-  struct Actuator
-  {
-    // state
-    double position_ = 0;
-    double velocity_ = 0;
-    double effort_ = 0;
+  void registerTransmission(std::string transmission_name,
+                            boost::shared_ptr<transmission_interface::Transmission> transmission,
+                            std::vector<transmission_interface::ActuatorInfo> actuator_infos,
+                            std::vector<transmission_interface::JointInfo> joint_infos);
 
-    // reference
-    double command_ = 0;
-
-    Actuator() = default;
-  } actuator_;
-
-  struct Joint
-  {
-    // state
-    double position_ = 0;
-    double velocity_ = 0;
-    double effort_ = 0;
-
-    // reference
-    double command_ = 0;
-
-    Joint() = default;
-  } joint_;
-
-  std::shared_ptr<transmission_interface::Transmission> actuator_to_joint_transmission_;
-  std::shared_ptr<transmission_interface::Transmission> joint_to_actuator_transmission_;
+  std::vector<Data> actuators_;
+  std::vector<Data> joints_;
+  std::vector<boost::shared_ptr<transmission_interface::Transmission> > transmissions_;
 };

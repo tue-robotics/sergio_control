@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   hardware_interface
   joint_state_controller
   roscpp
+  transmission_interface
 )
 
 catkin_package()

@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
   ros::NodeHandle local_nh("~");
   ros::Rate rate(local_nh.param("frequency", 10));
   std::string ethernet_interface = local_nh.param("ethernet_interface", std::string("eth0"));
-  std::string urdf_string = local_nh.param("robot_description", std::string(""));
+  std::string urdf_string = local_nh.param("/robot_description", std::string(""));
 
   try
   {
