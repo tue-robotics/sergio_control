@@ -5,7 +5,9 @@
 
 
 	<node name="sergio_control_node" pkg="sergio_control" type="sergio_control_node" output="screen" />
-	
+
 	<!-- Load the default controllers -->
 	<node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" args="joint_state_controller effort_trajectory_controller" />
+
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 </launch>
