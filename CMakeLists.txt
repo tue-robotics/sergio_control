@@ -7,6 +7,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   controller_manager
   diagnostic_updater
+  ethercat_interface
   hardware_interface
   joint_state_controller
   roscpp

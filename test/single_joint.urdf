@@ -19,6 +19,10 @@
     </joint>
     <actuator name="actuator1">
       <mechanicalReduction>66.2204081633</mechanicalReduction>
+      <outputSlave>2</outputSlave>
+      <outputChannel>1</outputChannel>
+      <inputSlave>3</inputSlave>
+      <inputChannel>1</inputChannel>
     </actuator>
   </transmission>
 

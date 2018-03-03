@@ -3,11 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
-const std::string ACTUATOR_NAME = "actuator1";
-const std::string JOINT_NAME = "joint1";
-const std::string JOINT_TO_ACTUATOR_TRANSMISSION_NAME = "joint1_to_actuator1_transmission";
-const std::string ACTUATOR_TO_JOINT_TRANSMISSION_NAME = "actuator1_to_joint1_transmission";
+const size_t ENCODER_COUNTS_PER_CYCLE = 256;
 
 struct Data
 {
@@ -24,6 +22,19 @@ struct Data
   Data(const std::string name) : name_(name)
   {
 
+  }
+};
+
+struct Actuator
+{
+  Data data_;
+
+  // TODO: Add pointer to ethercat iface
+
+  Actuator(const std::string name, size_t input_slave, size_t input_channel,
+           size_t output_slave, size_t output_channel) : data_(name)
+  {
+    std::cout << "Actuator " << name << " " << input_slave << " " << input_channel << output_slave << " " << output_channel << std::endl;
   }
 };
 

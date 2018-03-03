@@ -8,6 +8,9 @@
 #include <transmission_interface/transmission_info.h>
 
 #include "sergio_hardware_mapping.h"
+#include "actuator_parser.h"
+
+#include <ethercat_interface/ethercat_interface.h>
 
 class SergioHardwareInterface : public hardware_interface::RobotHW
 {
@@ -59,12 +62,35 @@ private:
   //!
   transmission_interface::JointToActuatorEffortInterface joint_to_actuator_transmission_interface_;
 
+  //!
+  //! \brief registerTransmission Register a transmission for joint, actuator combinations
+  //! \param transmission_name Name of the transmission
+  //! \param transmission Transmission ptr
+  //! \param actuator_infos Information about the actuators in this transmission
+  //! \param joint_infos Information about the joints in this transmission
+  //!
   void registerTransmission(std::string transmission_name,
                             boost::shared_ptr<transmission_interface::Transmission> transmission,
                             std::vector<transmission_interface::ActuatorInfo> actuator_infos,
                             std::vector<transmission_interface::JointInfo> joint_infos);
 
-  std::vector<Data> actuators_;
+  //!
+  //! \brief actuators_ State and references of all registered actuators
+  //!
+  std::vector<Actuator> actuators_;
+
+  //!
+  //! \brief joints_ State and references of all registered joints
+  //!
   std::vector<Data> joints_;
+
+  //!
+  //! \brief transmissions_ All transmissions obtained via the URDF
+  //!
   std::vector<boost::shared_ptr<transmission_interface::Transmission> > transmissions_;
+
+  //!
+  //! \brief ethercat_interface_ IO interface
+  //!
+  EthercatInterface ethercat_interface_;
 };
