@@ -1,0 +1,11 @@
+<launch>
+    <rosparam file="$(find sergio_control)/parameters/controllers.yaml" command="load"/>
+
+	<param name="robot_description" textfile="$(find sergio_control)/test/single_joint.urdf" />
+
+
+	<node name="sergio_control_node" pkg="sergio_control" type="sergio_control_node" output="screen" />
+	
+	<!-- Load the default controllers -->
+	<node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" args="effort_trajectory_controller" />
+</launch>

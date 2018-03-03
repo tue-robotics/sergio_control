@@ -18,7 +18,10 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME}_node src/${PROJECT_NAME}_node.cpp src/sergio_hardware_interface.cpp)
+add_executable(${PROJECT_NAME}_node
+src/${PROJECT_NAME}_node.cpp
+src/sergio_hardware_interface.cpp src/sergio_hardware_interface.h
+)
 
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}

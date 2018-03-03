@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<robot name="single_joint">
+
+  <link name="base_link" />
+  <link name="link1" />
+
+  <joint name="joint" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="-6.28" upper="6.28" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="0.2 0.01 0"/>
+    <parent link="base_link"/>
+    <child link="link1"/>
+  </joint>
+
+</robot>
