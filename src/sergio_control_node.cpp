@@ -35,12 +35,13 @@ int main(int argc, char* argv[])
   ros::init(argc, argv, "sergio_control");
 
   ros::NodeHandle local_nh("~");
-  ros::Rate rate(local_nh.param("frequency", 1000));
+  ros::Rate rate(local_nh.param("frequency", 10));
   std::string ethernet_interface = local_nh.param("ethernet_interface", std::string("eth0"));
+  std::string urdf_string = local_nh.param("robot_description", std::string(""));
 
   try
   {
-    SergioHardwareInterface robot(ethernet_interface);
+    SergioHardwareInterface robot(ethernet_interface, urdf_string);
 
     controller_manager::ControllerManager cm(&robot);
 
