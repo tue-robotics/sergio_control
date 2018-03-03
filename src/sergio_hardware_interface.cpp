@@ -141,6 +141,11 @@ void SergioHardwareInterface::write(const ros::Time &, const ros::Duration &)
 {
   joint_to_actuator_transmission_interface_.propagate();
 
+  for (const Data& actuator : actuators_)
+  {
+    ROS_INFO("Sending %.3f [Nm] as command to actuator %s", actuator.command_, actuator.name_.c_str());
+  }
+
   // TODO: Write the ethercat interface
   //
   //       1. Convert the effort to voltage
