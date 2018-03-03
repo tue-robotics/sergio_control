@@ -1,3 +1,9 @@
+# Publish all joint states ----------------------------------
+# Creates the /joint_states topic necessary in ROS
+joint_state_controller:
+   type:         joint_state_controller/JointStateController
+   publish_rate: 50
+
 # Joint Trajectory Controller -------------------------------
 # For detailed explanations of parameter see http://wiki.ros.org/joint_trajectory_controller
 effort_trajectory_controller:
@@ -8,6 +14,6 @@ effort_trajectory_controller:
   gains:
     joint: 
       p: 2.0
-      i: 0.0
-      d: 0.01
-      i_clamp: 1
+      # i: 0.0
+      # d: 0.01
+      # i_clamp: 1
