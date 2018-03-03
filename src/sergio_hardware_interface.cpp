@@ -35,6 +35,8 @@ SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_int
   // Expose the joint command interface
   joint_effort_interface_.registerHandle(hardware_interface::JointHandle(joint_state_handle, &joint_.command_));
 
+  // Create transmission from actuator to joint
+
   // Required for transmission interfaces
   transmission_interface::ActuatorData actuator_data;
   transmission_interface::JointData joint_data;
@@ -49,21 +51,32 @@ SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_int
   joint_data.velocity.push_back(&joint_.velocity_);
   joint_data.effort.push_back(&joint_.effort_);
 
-  // Load the transmissions
-  actuator_to_joint_transmission_ = std::shared_ptr<transmission_interface::Transmission>(new transmission_interface::SimpleTransmission(66));
-  joint_to_actuator_transmission_ = std::shared_ptr<transmission_interface::Transmission>(new transmission_interface::SimpleTransmission(66));
-
-  // Create transmission from actuator to joint
+  // Create and store transmission
+  actuator_to_joint_transmission_ = std::shared_ptr<transmission_interface::Transmission>(
+        new transmission_interface::SimpleTransmission(66));
   actuator_to_joint_transmission_interface_.registerHandle(
         transmission_interface::ActuatorToJointPositionHandle(ACTUATOR_TO_JOINT_TRANSMISSION_NAME,
                                                               actuator_to_joint_transmission_.get(),
                                                               actuator_data, joint_data));
 
   // Create transmission from joint to actuator
+
+  // Required for transmission interfaces
+  transmission_interface::ActuatorData actuator_command_data;
+  transmission_interface::JointData joint_command_data;
+
+  // Store actuator data for transmissions
+  actuator_command_data.effort.push_back(&actuator_.command_);
+
+  // Store joint data for transmissions
+  joint_command_data.effort.push_back(&joint_.command_);
+
+  joint_to_actuator_transmission_ = std::shared_ptr<transmission_interface::Transmission>(
+        new transmission_interface::SimpleTransmission(66));
   joint_to_actuator_transmission_interface_.registerHandle(
         transmission_interface::JointToActuatorEffortHandle(JOINT_TO_ACTUATOR_TRANSMISSION_NAME,
                                                             joint_to_actuator_transmission_.get(),
-                                                            actuator_data, joint_data));
+                                                            actuator_command_data, joint_command_data));
 
   // Finally register all interfaces
   registerInterface(&actuator_state_interface_);
