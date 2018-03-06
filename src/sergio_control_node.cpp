@@ -43,10 +43,18 @@ int main(int argc, char* argv[])
   std::string ethernet_interface = local_nh.param("ethernet_interface", std::string("eth0"));
   std::string urdf_string = local_nh.param("/robot_description", std::string(""));
 
-  XmlRpc::XmlRpcValue ethercat_actuators_param;
-  local_nh.getParam("ethercat_actuators", ethercat_actuators_param);
-  std::map<std::string, EthercatActuatorDescription> ethercat_actuators_description =
-      getEthercatActuatorsDescription(ethercat_actuators_param);
+  std::map<std::string, EthercatActuatorDescription> ethercat_actuators_description;
+  try
+  {
+    XmlRpc::XmlRpcValue ethercat_actuators_param;
+    local_nh.getParam("ethercat_actuators", ethercat_actuators_param);
+    ethercat_actuators_description = getEthercatActuatorsDescription(ethercat_actuators_param);
+  }
+  catch (const std::exception& e)
+  {
+    ROS_FATAL_STREAM("Failed to parse ~ethercat_actuators parameter: " << e.what());
+    return 1;
+  }
 
   try
   {

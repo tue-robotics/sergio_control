@@ -6,6 +6,8 @@
 #include <transmission_interface/transmission_interface.h>
 #include <transmission_interface/transmission_info.h>
 
+#include <ethercat_interface/ethercat_interface.h>
+
 #include "sergio_hardware_mapping.h"
 #include "actuator_parser.h"
 
@@ -112,7 +114,7 @@ private:
   //!
   //! \brief ethercat_interface_ IO interface
   //!
-//  EthercatInterfaceDescription ethercat_interface_;
+  EthercatInterface ethercat_interface_;
 };
 
 }

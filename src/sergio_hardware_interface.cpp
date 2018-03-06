@@ -11,10 +11,10 @@ SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_int
                                                  const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description)
 {
   // 1. Connect to the ethercat interface
-//  if (!ethercat_interface_.initialize(ethernet_interface))
-//  {
-//    throw std::runtime_error("Failed to initialize ethercat interface on ethernet interface " + ethernet_interface);
-//  }
+  if (!ethercat_interface_.initialize(ethernet_interface))
+  {
+    throw std::runtime_error("Failed to initialize ethercat interface on ethernet interface " + ethernet_interface);
+  }
 
   // 2. Parse the urdf and register all transmissions
   transmission_interface::TransmissionParser parser;
@@ -138,12 +138,13 @@ void SergioHardwareInterface::registerTransmission(std::string transmission_name
 
 void SergioHardwareInterface::read(const ros::Time &, const ros::Duration &)
 {
-//  // 1. Read the ethercat IO
-//  ethercat_interface_.receiveAll();
+  ethercat_interface_.receiveAll();
 
-//  for (Actuator& actuator : actuators_)
-//  {
-//  }
+  for (Actuator& actuator : actuators_)
+  {
+//    TODO: Update the actuator state
+//    actuator.data_.position_ = actuator.encoder / ENCODER_COUNTS_PER_CYCLE;
+  }
 
   actuator_to_joint_transmission_interface_.propagate();
 }
@@ -155,13 +156,11 @@ void SergioHardwareInterface::write(const ros::Time &, const ros::Duration &)
   for (const Actuator& actuator : actuators_)
   {
     ROS_INFO("Sending %.3f [Nm] as command to actuator %s", actuator.data_.command_, actuator.data_.name_.c_str());
+//    TODO: Send reference to real actuator
+//    actuator.motor.send(actuator.data_.effort_ * SOME_FACTOR_FOR_NM_TO_VOLTAGE);
   }
 
-//  // TODO: Write the ethercat interface
-//  //
-//  //       1. Convert the effort to voltage
-//  //       2. Write to ethercat IO
-//  ethercat_interface_.sendAll();
+  ethercat_interface_.sendAll();
 }
 
 }

@@ -7,7 +7,13 @@
 namespace sergio_control
 {
 
-inline EthercatInterfaceDescription getEthercatInterfaceDescription(XmlRpc::XmlRpcValue param)
+//!
+//! \brief getSlaveAndChannel Return the slave and channel from a XMLRPC struct
+//! \param param The struct xml rpc
+//! \param slave Slave id reference
+//! \param channel Channel id reference
+//!
+inline void getSlaveAndChannel(XmlRpc::XmlRpcValue param, size_t& slave, size_t& channel)
 {
   if (param.getType() != XmlRpc::XmlRpcValue::TypeStruct)
   {
@@ -26,12 +32,63 @@ inline EthercatInterfaceDescription getEthercatInterfaceDescription(XmlRpc::XmlR
     throw std::runtime_error("Channel and slave should be of type int");
   }
 
-  EthercatInterfaceDescription description;
-  description.slave_ = static_cast<int>(slave_xmlrpc);
-  description.channel_ = static_cast<int>(channel_xmlrpc);
-  return description;
+  slave = static_cast<int>(slave_xmlrpc);
+  channel = static_cast<int>(channel_xmlrpc);
 }
 
+//!
+//! \brief getEthercatMotorInterfaceDescription Returns the motor interface description
+//! \param param XML RPC param of the motor
+//! \return Description
+//!
+inline EthercatMotorInterfaceDescription getEthercatMotorInterfaceDescription(XmlRpc::XmlRpcValue param)
+{
+  EthercatMotorInterfaceDescription des;
+  getSlaveAndChannel(param, des.slave_, des.channel_);
+
+  if (!param.hasMember("volt_per_newton_meter"))
+  {
+    throw std::runtime_error("An EthercatMotorInterfaceDescription should have a volt_per_newton_meter key");
+  }
+  XmlRpc::XmlRpcValue volt_per_newton_meter_xmlpc = param["volt_per_newton_meter"];
+  if (volt_per_newton_meter_xmlpc.getType() != XmlRpc::XmlRpcValue::TypeDouble)
+  {
+    throw std::runtime_error("Volt per newton meter should be a double");
+  }
+  des.volt_per_newton_meter_ = static_cast<double>(volt_per_newton_meter_xmlpc);
+
+  return des;
+}
+
+//!
+//! \brief getEthercatEncoderInterfaceDescription Returns the encoder interface description
+//! \param param XML RPC param of the encoder
+//! \return Description
+//!
+inline EthercatEncoderInterfaceDescription getEthercatEncoderInterfaceDescription(XmlRpc::XmlRpcValue param)
+{
+  EthercatEncoderInterfaceDescription des;
+  getSlaveAndChannel(param, des.slave_, des.channel_);
+
+  if (!param.hasMember("encoder_counts_per_revolution"))
+  {
+    throw std::runtime_error("An EthercatEncoderInterfaceDescription should have a encoder_counts_per_revolution key");
+  }
+  XmlRpc::XmlRpcValue encoder_counts_per_revolution_xmlrpc = param["encoder_counts_per_revolution"];
+  if (encoder_counts_per_revolution_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeInt)
+  {
+    throw std::runtime_error("Volt per newton meter should be a double");
+  }
+  des.encoder_counts_per_revolution_ = static_cast<int>(encoder_counts_per_revolution_xmlrpc);
+
+  return des;
+}
+
+//!
+//! \brief getEthercatActuatorsDescription Parse the actuators description from the parameter server
+//! \param param The XML RPC parameter
+//! \return Return a map from actuator names to descriptions
+//!
 inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDescription(XmlRpc::XmlRpcValue param)
 {
   std::map<std::string, EthercatActuatorDescription> ethercat_actuators_description;
@@ -57,8 +114,8 @@ inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDe
     }
 
     EthercatActuatorDescription description;
-    description.encoder_ = getEthercatInterfaceDescription(actuator_description_xmlrpc["encoder"]);
-    description.motor_ = getEthercatInterfaceDescription(actuator_description_xmlrpc["motor"]);
+    description.encoder_ = getEthercatEncoderInterfaceDescription(actuator_description_xmlrpc["encoder"]);
+    description.motor_ = getEthercatMotorInterfaceDescription(actuator_description_xmlrpc["motor"]);
     ethercat_actuators_description[actuator_name] = description;
 
     ROS_INFO_STREAM("Parsed " << actuator_name << ": " << description);
@@ -72,6 +129,12 @@ inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDe
   return ethercat_actuators_description;
 }
 
+//!
+//! \brief getActuator Get an actuator from an actuator description
+//! \param actuator_info The actuator information from the URDF
+//! \param ethercat_actuators_description The available ethercat actuators descripton
+//! \return An actuator that holds the state, a reference and an interface to ethercat
+//!
 inline Actuator getActuator(const transmission_interface::ActuatorInfo& actuator_info,
                             const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description)
 {
@@ -86,7 +149,6 @@ inline Actuator getActuator(const transmission_interface::ActuatorInfo& actuator
     throw std::runtime_error(actuator_info.name_ + " could not be found in the ethercat actuators description");
   }
 
-  // TODO obtain
   return Actuator(actuator_info.name_, ethercat_actuator->second);
 }
 

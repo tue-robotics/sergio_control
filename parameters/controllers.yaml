@@ -31,6 +31,8 @@ sergio_control_node:
       encoder:
         slave: 0
         channel: 0
+        encoder_counts_per_revolution: 256
       motor:
         slave: 0
         channel: 0
+        volt_per_newton_meter: 0.0228266 # Max torque = 0.0856 Nm, Voltage ranges from -3.75 V to 3.75 V
