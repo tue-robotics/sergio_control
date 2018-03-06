@@ -64,12 +64,22 @@ struct JointState
   }
 };
 
+#include <ethercat_interface/ethercat_interface.h>
+
 struct Actuator
 {
-  Actuator(const std::string& name, const EthercatActuatorDescription& description) : data_(name)
+  Actuator(const std::string& name,
+           EthercatActuatorDescription description,
+           EthercatInterface& interface) :
+    data_(name),
+    description_(description),
+    analogue_out_(interface.getInterface(description.motor_.slave_, description.motor_.channel_))
   {
-    // TODO Create pointer to encoder and motor
   }
+
+  EthercatActuatorDescription description_;
+  std::shared_ptr<IOInterface> analogue_out_;
+  std::shared_ptr<IOInterface> digital_in_;
 
   JointState data_;
 };
