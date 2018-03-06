@@ -5,9 +5,34 @@
 #include <string>
 #include <iostream>
 
+namespace sergio_control
+{
+
 const size_t ENCODER_COUNTS_PER_CYCLE = 256;
 
-struct Data
+struct EthercatInterfaceDescription
+{
+  size_t slave_ = 0;
+  size_t channel_ = 0;
+};
+inline std::ostream& operator << (std::ostream &o, const EthercatInterfaceDescription &a)
+{
+  o << "EthercatInterfaceDescription(slave=" << a.slave_ << ", channel=" << a.channel_ << ")";
+  return o;
+}
+
+struct EthercatActuatorDescription
+{
+  EthercatInterfaceDescription motor_;
+  EthercatInterfaceDescription encoder_;
+};
+inline std::ostream& operator << (std::ostream &o, const EthercatActuatorDescription &a)
+{
+  o << "EthercatActuatorDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ")";
+  return o;
+}
+
+struct JointState
 {
   // state
   double position_ = 0;
@@ -19,7 +44,7 @@ struct Data
 
   std::string name_;
 
-  Data(const std::string name) : name_(name)
+  JointState(const std::string& name) : name_(name)
   {
 
   }
@@ -27,15 +52,14 @@ struct Data
 
 struct Actuator
 {
-  Data data_;
-
-  // TODO: Add pointer to ethercat iface
-
-  Actuator(const std::string name, size_t input_slave, size_t input_channel,
-           size_t output_slave, size_t output_channel) : data_(name)
+  Actuator(const std::string& name, const EthercatActuatorDescription& description) : data_(name)
   {
-    std::cout << "Actuator " << name << " " << input_slave << " " << input_channel << output_slave << " " << output_channel << std::endl;
+    // TODO Create pointer to encoder and motor
   }
+
+  JointState data_;
 };
+
+}
 
 #endif

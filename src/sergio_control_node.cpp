@@ -4,9 +4,13 @@
 #include "sergio_hardware_interface.h"
 #include "ros/ros.h"
 
+using namespace sergio_control;
 
 //!
 //! \brief controlThread Separate thread for running the controller
+//! \param rate Rate of the control loop
+//! \param robot Pointer to the robot hardare interface
+//! \param cm Controller manager interface to ROS control
 //!
 void controlThread(ros::Rate rate, SergioHardwareInterface* robot, controller_manager::ControllerManager* cm)
 {
@@ -39,15 +43,20 @@ int main(int argc, char* argv[])
   std::string ethernet_interface = local_nh.param("ethernet_interface", std::string("eth0"));
   std::string urdf_string = local_nh.param("/robot_description", std::string(""));
 
+  XmlRpc::XmlRpcValue ethercat_actuators_param;
+  local_nh.getParam("ethercat_actuators", ethercat_actuators_param);
+  std::map<std::string, EthercatActuatorDescription> ethercat_actuators_description =
+      getEthercatActuatorsDescription(ethercat_actuators_param);
+
   try
   {
-    SergioHardwareInterface robot(ethernet_interface, urdf_string);
+    SergioHardwareInterface robot(ethernet_interface, urdf_string, ethercat_actuators_description);
 
     controller_manager::ControllerManager cm(&robot);
 
     boost::thread(boost::bind(controlThread, rate, &robot, &cm));
 
-    ROS_INFO("Sergio Controller Manager initialized, spinning ...");
+    ROS_INFO("Sergio Control initialized, spinning ...");
 
     ros::spin();
   }

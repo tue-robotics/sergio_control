@@ -4,14 +4,19 @@
 #include <transmission_interface/transmission_loader.h>
 #include <transmission_interface/simple_transmission_loader.h>
 
-SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_interface, const std::string& urdf_string)
+namespace sergio_control
 {
-  if (!ethercat_interface_.initialize(ethernet_interface))
-  {
-    throw std::runtime_error("Failed to initialize ethercat interface on ethernet interface " + ethernet_interface);
-  }
 
-  // Parse the urdf and look for transmissions
+SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_interface, const std::string& urdf_string,
+                                                 const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description)
+{
+  // 1. Connect to the ethercat interface
+//  if (!ethercat_interface_.initialize(ethernet_interface))
+//  {
+//    throw std::runtime_error("Failed to initialize ethercat interface on ethernet interface " + ethernet_interface);
+//  }
+
+  // 2. Parse the urdf and register all transmissions
   transmission_interface::TransmissionParser parser;
   std::vector<transmission_interface::TransmissionInfo> transmission_infos;
   if (!parser.parse(urdf_string, transmission_infos))
@@ -40,11 +45,11 @@ SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_int
       throw std::runtime_error("Failed to load transmission of type: " + transmission_info.type_);
     }
 
-    registerTransmission(transmission_info.name_, transmission, transmission_info.actuators_, transmission_info.joints_);
+    registerTransmission(transmission_info.name_, transmission, transmission_info.actuators_,
+                         transmission_info.joints_, ethercat_actuators_description);
   }
 
-  // Finally register all interfaces
-  ROS_INFO("Registering all interfaces with ROS control");
+  // 3. Finally register all interfaces to ROS control
   registerInterface(&actuator_state_interface_);
   registerInterface(&actuator_effort_interface_);
   registerInterface(&joint_state_interface_);
@@ -55,8 +60,9 @@ SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_int
 
 void SergioHardwareInterface::registerTransmission(std::string transmission_name,
                                                    boost::shared_ptr<transmission_interface::Transmission> transmission,
-                                                   std::vector<transmission_interface::ActuatorInfo> actuator_infos,
-                                                   std::vector<transmission_interface::JointInfo> joint_infos)
+                                                   std::vector<transmission_interface::ActuatorInfo> transmission_actuator_infos,
+                                                   std::vector<transmission_interface::JointInfo> transmission_joint_infos,
+                                                   std::map<std::string, EthercatActuatorDescription> ethercat_actuators_description)
 {
   ROS_INFO("Registering transmission '%s' with %d actuators and %d joints", transmission_name.c_str(),
            (int) transmission->numActuators(), (int) transmission->numJoints());
@@ -68,10 +74,10 @@ void SergioHardwareInterface::registerTransmission(std::string transmission_name
   transmission_interface::JointData joint_command_data;
 
   // Register all actuators
-  for (transmission_interface::ActuatorInfo actuator_info : actuator_infos)
+  for (transmission_interface::ActuatorInfo actuator_info : transmission_actuator_infos)
   {
     // Create a new actuator
-    actuators_.push_back(getActuator(actuator_info));
+    actuators_.push_back(getActuator(actuator_info, ethercat_actuators_description));
     Actuator& actuator = actuators_.back();
 
     // Expose the actuator state
@@ -93,11 +99,11 @@ void SergioHardwareInterface::registerTransmission(std::string transmission_name
   }
 
   // Register all joints
-  for (transmission_interface::JointInfo joint_info : joint_infos)
+  for (transmission_interface::JointInfo joint_info : transmission_joint_infos)
   {
     // Create a new actuator
-    joints_.push_back(Data(joint_info.name_));
-    Data& joint = joints_.back();
+    joints_.push_back(JointState(joint_info.name_));
+    JointState& joint = joints_.back();
 
     // Expose the joint state
     hardware_interface::JointStateHandle joint_state_handle(joint.name_, &joint.position_,
@@ -132,12 +138,12 @@ void SergioHardwareInterface::registerTransmission(std::string transmission_name
 
 void SergioHardwareInterface::read(const ros::Time &, const ros::Duration &)
 {
-  // 1. Read the ethercat IO
-  ethercat_interface_.receiveAll();
+//  // 1. Read the ethercat IO
+//  ethercat_interface_.receiveAll();
 
-  for (Actuator& actuator : actuators_)
-  {
-  }
+//  for (Actuator& actuator : actuators_)
+//  {
+//  }
 
   actuator_to_joint_transmission_interface_.propagate();
 }
@@ -151,9 +157,11 @@ void SergioHardwareInterface::write(const ros::Time &, const ros::Duration &)
     ROS_INFO("Sending %.3f [Nm] as command to actuator %s", actuator.data_.command_, actuator.data_.name_.c_str());
   }
 
-  // TODO: Write the ethercat interface
-  //
-  //       1. Convert the effort to voltage
-  //       2. Write to ethercat IO
-  ethercat_interface_.sendAll();
+//  // TODO: Write the ethercat interface
+//  //
+//  //       1. Convert the effort to voltage
+//  //       2. Write to ethercat IO
+//  ethercat_interface_.sendAll();
+}
+
 }

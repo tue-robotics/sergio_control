@@ -3,23 +3,27 @@
 #include <hardware_interface/actuator_state_interface.h>
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
-
 #include <transmission_interface/transmission_interface.h>
 #include <transmission_interface/transmission_info.h>
 
 #include "sergio_hardware_mapping.h"
 #include "actuator_parser.h"
 
-#include <ethercat_interface/ethercat_interface.h>
+namespace sergio_control
+{
 
 class SergioHardwareInterface : public hardware_interface::RobotHW
 {
 public:
 
   //!
-  //! \brief Sergio Robot hardware interface
+  //! \brief SergioHardwareInterface Hardware interface for the Sergio robot
+  //! \param ethernet_interface Network address of the ethercat interface
+  //! \param urdf_string URDF String used to parse transmission out of the robot model
+  //! \param ethercat_actuators_description Available ethercat actuators; names should match the actuator names in urdf
   //!
-  SergioHardwareInterface(const std::string& ethernet_interface, const std::string& urdf_string);
+  SergioHardwareInterface(const std::string& ethernet_interface, const std::string& urdf_string,
+                          const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description);
 
   //!
   //! \brief read Read data from ethercat interface
@@ -64,33 +68,51 @@ private:
 
   //!
   //! \brief registerTransmission Register a transmission for joint, actuator combinations
+  //!
+  //! This methods registers the transmissions parsed from the URDF. Per transmission the following:
+  //!
+  //! - Actuator state
+  //! - Actuator command
+  //! - Joint state
+  //! - Joint command
+  //! - Transmission from the reference from joint to actuator
+  //! - Transmission from the state of the actuator to the joint state
+  //!
+  //! The transmissions make sure that the other half is updated when one half updates. So update the reference for the
+  //! motor if the reference of the joint updates (command). But also update the state of the joint if the state of the
+  //! actuator updates. This is done in the read / write hook by the transmission propogate methods.
+  //!
   //! \param transmission_name Name of the transmission
   //! \param transmission Transmission ptr
-  //! \param actuator_infos Information about the actuators in this transmission
-  //! \param joint_infos Information about the joints in this transmission
+  //! \param transmission_actuator_infos Information about the actuators in this transmission
+  //! \param transmission_joint_infos Information about the joints in this transmission
+  //! \param ethercat_actuators_description Description of the ethercat actuators
   //!
   void registerTransmission(std::string transmission_name,
                             boost::shared_ptr<transmission_interface::Transmission> transmission,
-                            std::vector<transmission_interface::ActuatorInfo> actuator_infos,
-                            std::vector<transmission_interface::JointInfo> joint_infos);
+                            std::vector<transmission_interface::ActuatorInfo> transmission_actuator_infos,
+                            std::vector<transmission_interface::JointInfo> transmission_joint_infos,
+                            std::map<std::string, EthercatActuatorDescription> ethercat_actuators_description);
 
   //!
-  //! \brief actuators_ State and references of all registered actuators
+  //! \brief actuators_ State and references of all ethercat actuators
   //!
   std::vector<Actuator> actuators_;
 
   //!
   //! \brief joints_ State and references of all registered joints
   //!
-  std::vector<Data> joints_;
+  std::vector<JointState> joints_;
 
   //!
   //! \brief transmissions_ All transmissions obtained via the URDF
   //!
-  std::vector<boost::shared_ptr<transmission_interface::Transmission> > transmissions_;
+  std::vector<boost::shared_ptr<transmission_interface::Transmission>> transmissions_;
 
   //!
   //! \brief ethercat_interface_ IO interface
   //!
-  EthercatInterface ethercat_interface_;
+//  EthercatInterfaceDescription ethercat_interface_;
 };
+
+}
