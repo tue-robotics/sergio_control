@@ -1,0 +1,3 @@
+- git:
+    local-name: ethercat_interface
+    uri: https://github.com/tue-robotics/ethercat_interface
