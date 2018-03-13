@@ -1,0 +1,4 @@
+<launch>
+	<param name="robot_description" textfile="$(find sergio_control)/test/single_joint.urdf" />
+	<node name="test_transmission_manager" pkg="sergio_control" type="test_transmission_manager" output="screen" />
+</launch>

@@ -1,11 +1,10 @@
-#ifndef ACTUATOR_PARSER_H
-#define ACTUATOR_PARSER_H
+#pragma once
 
-#include "sergio_hardware_mapping.h"
-#include <transmission_interface/transmission_parser.h>
+#include <xmlrpcpp/XmlRpc.h>
+#include <ros/console.h>
 
-namespace sergio_control
-{
+#include "./ethercat_interface_descriptions.h"
+
 
 //!
 //! \brief getSlaveAndChannel Return the slave and channel from a XMLRPC struct
@@ -128,32 +127,3 @@ inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDe
 
   return ethercat_actuators_description;
 }
-
-//!
-//! \brief getActuator Get an actuator from an actuator description
-//! \param actuator_info The actuator information from the URDF
-//! \param ethercat_actuators_description The available ethercat actuators descripton
-//! \param ethercat_interface Reference to ethercat interface
-//! \return An actuator that holds the state, a reference and an interface to ethercat
-//!
-inline Actuator getActuator(const transmission_interface::ActuatorInfo& actuator_info,
-                            const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description,
-                            EthercatInterface& ethercat_interface)
-{
-  ROS_INFO("Getting actuator %s from ethercat actuators description ...", actuator_info.name_.c_str());
-
-  // Lookup the actuator in the ethercat actuators description
-  std::map<std::string, EthercatActuatorDescription>::const_iterator ethercat_actuator =
-      ethercat_actuators_description.find(actuator_info.name_);
-
-  if (ethercat_actuator == ethercat_actuators_description.end())
-  {
-    throw std::runtime_error(actuator_info.name_ + " could not be found in the ethercat actuators description");
-  }
-
-  return Actuator(actuator_info.name_, ethercat_actuator->second, ethercat_interface);
-}
-
-}
-
-#endif

@@ -20,11 +20,19 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME}_node
-src/${PROJECT_NAME}_node.cpp
-src/sergio_hardware_interface.cpp src/sergio_hardware_interface.h
-)
+add_library(transmission_manager src/transmission_manager.cpp)
 
-target_link_libraries(${PROJECT_NAME}_node
+target_link_libraries(transmission_manager
   ${catkin_LIBRARIES}
 )
+
+add_executable(${PROJECT_NAME}_node
+  src/${PROJECT_NAME}_node.cpp
+  src/sergio_hardware_interface.cpp
+)
+
+target_link_libraries(${PROJECT_NAME}_node transmission_manager ${catkin_LIBRARIES})
+
+# Test
+add_executable(test_transmission_manager test/test_transmission_manager.cpp)
+target_link_libraries(test_transmission_manager transmission_manager)
