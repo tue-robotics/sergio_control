@@ -3,12 +3,23 @@
 #include "../src/ethercat_actuator_parser.h"
 #include "../src/transmission_manager.h"
 
-void setJointStatesPosition(std::vector<JointState>& states, double position)
+void setActuatorStatesPosition(std::vector<ActuatorState>& states, double position, double velocity, double effort)
 {
-  ROS_INFO("Setting joint states position to %.2f", position);
-  for (JointState& state : states)
+  ROS_INFO("Setting actuator states position=%.2f, velocity=%.3f, effort=%.2f", position, velocity, effort);
+  for (ActuatorState& state : states)
   {
     state.position_ = position;
+    state.velocity_ = velocity;
+    state.effort_ = effort;
+  }
+}
+
+void setJointStatesCommand(std::vector<JointState>& states, double command)
+{
+  ROS_INFO("Setting joint states command to %.2f", command);
+  for (JointState& state : states)
+  {
+    state.command_ = command;
   }
 }
 
@@ -35,7 +46,16 @@ int main(int argc, char* argv[])
 
   TransmissionManager transmission_manager(urdf_string);
 
-  setJointStatesPosition(transmission_manager.joint_states_, 0.1);
+  // First check if we can propagate the command on the joint to the command of the actuator
+  setJointStatesCommand(transmission_manager.joint_states_, 0.1);
   transmission_manager.propogateJointStatesToActuatorStates();
+  printState(transmission_manager.joint_states_, transmission_manager.actuator_states_);
+
+  setJointStatesCommand(transmission_manager.joint_states_, -0.1);
+  transmission_manager.propogateJointStatesToActuatorStates();
+  printState(transmission_manager.joint_states_, transmission_manager.actuator_states_);
+
+  setActuatorStatesPosition(transmission_manager.actuator_states_, 3, 2, 1);
+  transmission_manager.propogateAcuatorStatesToJointStates();
   printState(transmission_manager.joint_states_, transmission_manager.actuator_states_);
 }
