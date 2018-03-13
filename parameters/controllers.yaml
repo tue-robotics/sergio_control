@@ -29,10 +29,10 @@ sergio_control_node:
   ethercat_actuators:
     actuator1:
       encoder:
-        slave: 0
+        slave: 2
         channel: 0
         encoder_counts_per_revolution: 256
       motor:
         slave: 1
         channel: 0
-        volt_per_newton_meter: 0.0228266 # Max torque = 0.0856 Nm, Voltage ranges from -3.75 V to 3.75 V
+        volt_per_newton_meter: 43.808411214953274 # Max torque = 0.0856 Nm, Voltage ranges from -3.75 V to 3.75 V

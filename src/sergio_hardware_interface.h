@@ -11,15 +11,20 @@ struct Actuator
 {
   Actuator(const EthercatActuatorDescription& description, ActuatorState* state, EthercatInterface& interface) :
     state_(state),
-    description_(description),
-    analogue_out_(interface.getInterface(description.motor_.slave_, description.motor_.channel_))
+    description_(description)
   {
-
+    ROS_INFO("Registering analogue out interface on slave %d and channel %d...",
+             (int) description.motor_.slave_, (int) description.motor_.channel_);
+    analogue_out_ = interface.getInterface(description.motor_.slave_, description.motor_.channel_);
+    ROS_INFO("Registering digital in interface on slave %d and channel %d ...",
+             (int) description.encoder_.slave_, (int) description.encoder_.channel_);
+    encoder_in_ = interface.getInterface(description.encoder_.slave_, description.encoder_.channel_);
+    ROS_INFO("Actuator initialized");
   }
 
   EthercatActuatorDescription description_;
   std::shared_ptr<IOInterface> analogue_out_;
-  std::shared_ptr<IOInterface> digital_in_;
+  std::shared_ptr<IOInterface> encoder_in_;
   ActuatorState* state_;
 };
 

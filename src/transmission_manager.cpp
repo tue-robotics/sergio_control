@@ -38,6 +38,8 @@ TransmissionManager::TransmissionManager(const std::string& urdf_string)
 
     registerTransmission(transmission_info.name_, transmission, transmission_info.actuators_, transmission_info.joints_);
   }
+
+  ROS_INFO("TransmissionManager initialized %d transmissions", (int) transmission_infos.size());
 }
 
 void TransmissionManager::registerTransmission(std::string transmission_name,
