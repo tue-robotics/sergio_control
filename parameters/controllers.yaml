@@ -36,3 +36,4 @@ sergio_control_node:
         slave: 1
         channel: 0
         volt_per_newton_meter: 43.808411214953274 # Max torque = 0.0856 Nm, Voltage ranges from -3.75 V to 3.75 V
+  frequency: 100
