@@ -17,13 +17,12 @@ struct JointState
 
   JointState(const std::string& name) : name_(name)
   {
-
   }
 };
-inline std::ostream& operator << (std::ostream &o, const JointState &s)
+inline std::ostream& operator<<(std::ostream& o, const JointState& s)
 {
-  o << "JointState(name=" << s.name_ << ", position=" << s.position_ << ", velocity=" << s.velocity_ << ", effort="
-    << s.effort_ << ", command=" << s.command_ << ")";
+  o << "JointState(name=" << s.name_ << ", position=" << s.position_ << ", velocity=" << s.velocity_
+    << ", effort=" << s.effort_ << ", command=" << s.command_ << ")";
   return o;
 }
 
@@ -41,12 +40,11 @@ struct ActuatorState
 
   ActuatorState(const std::string& name) : name_(name)
   {
-
   }
 };
-inline std::ostream& operator << (std::ostream &o, const ActuatorState &s)
+inline std::ostream& operator<<(std::ostream& o, const ActuatorState& s)
 {
-  o << "ActuatorState(name=" << s.name_ << ", position=" << s.position_ << ", velocity=" << s.velocity_ << ", effort="
-    << s.effort_ << ", command=" << s.command_ << ")";
+  o << "ActuatorState(name=" << s.name_ << ", position=" << s.position_ << ", velocity=" << s.velocity_
+    << ", effort=" << s.effort_ << ", command=" << s.command_ << ")";
   return o;
 }

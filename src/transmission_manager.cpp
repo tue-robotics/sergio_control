@@ -4,7 +4,6 @@
 #include <transmission_interface/transmission_loader.h>
 #include <transmission_interface/simple_transmission_loader.h>
 
-
 TransmissionManager::TransmissionManager(const std::string& urdf_string)
 {
   // 2. Parse the urdf and register all transmissions
@@ -17,7 +16,8 @@ TransmissionManager::TransmissionManager(const std::string& urdf_string)
 
   for (const transmission_interface::TransmissionInfo& transmission_info : transmission_infos)
   {
-    ROS_INFO("Loading transmission '%s' of type '%s'", transmission_info.name_.c_str(), transmission_info.type_.c_str());
+    ROS_INFO("Loading transmission '%s' of type '%s'", transmission_info.name_.c_str(),
+             transmission_info.type_.c_str());
 
     boost::shared_ptr<transmission_interface::Transmission> transmission;
     if (transmission_info.type_ == "transmission_interface/SimpleTransmission")
@@ -36,19 +36,20 @@ TransmissionManager::TransmissionManager(const std::string& urdf_string)
       throw std::runtime_error("Failed to load transmission of type: " + transmission_info.type_);
     }
 
-    registerTransmission(transmission_info.name_, transmission, transmission_info.actuators_, transmission_info.joints_);
+    registerTransmission(transmission_info.name_, transmission, transmission_info.actuators_,
+                         transmission_info.joints_);
   }
 
-  ROS_INFO("TransmissionManager initialized %d transmissions", (int) transmission_infos.size());
+  ROS_INFO("TransmissionManager initialized %d transmissions", (int)transmission_infos.size());
 }
 
-void TransmissionManager::registerTransmission(std::string transmission_name,
-                                               boost::shared_ptr<transmission_interface::Transmission> transmission,
-                                               std::vector<transmission_interface::ActuatorInfo> transmission_actuator_infos,
-                                               std::vector<transmission_interface::JointInfo> transmission_joint_infos)
+void TransmissionManager::registerTransmission(
+    std::string transmission_name, boost::shared_ptr<transmission_interface::Transmission> transmission,
+    std::vector<transmission_interface::ActuatorInfo> transmission_actuator_infos,
+    std::vector<transmission_interface::JointInfo> transmission_joint_infos)
 {
   ROS_INFO("Registering transmission '%s' with %d actuators and %d joints", transmission_name.c_str(),
-           (int) transmission->numActuators(), (int) transmission->numJoints());
+           (int)transmission->numActuators(), (int)transmission->numJoints());
 
   // Required for transmission interfaces
   transmission_interface::ActuatorData actuator_data;
@@ -69,8 +70,8 @@ void TransmissionManager::registerTransmission(std::string transmission_name,
     actuator_state_interface_.registerHandle(actuator_state_handle);
 
     // Expose the actuator command interface
-    actuator_effort_interface_.registerHandle(hardware_interface::ActuatorHandle(actuator_state_handle,
-                                                                                 &actuator.command_));
+    actuator_effort_interface_.registerHandle(
+        hardware_interface::ActuatorHandle(actuator_state_handle, &actuator.command_));
 
     // Required for transmission interface
     actuator_data.position.push_back(&actuator.position_);
@@ -89,8 +90,8 @@ void TransmissionManager::registerTransmission(std::string transmission_name,
     JointState& joint = joint_states_.back();
 
     // Expose the joint state
-    hardware_interface::JointStateHandle joint_state_handle(joint.name_, &joint.position_,
-                                                            &joint.velocity_, &joint.effort_);
+    hardware_interface::JointStateHandle joint_state_handle(joint.name_, &joint.position_, &joint.velocity_,
+                                                            &joint.effort_);
     joint_state_interface_.registerHandle(joint_state_handle);
 
     // Expose the joint command interface
@@ -108,14 +109,12 @@ void TransmissionManager::registerTransmission(std::string transmission_name,
   transmissions_.push_back(transmission);
 
   // Register transmissions
-  actuator_to_joint_transmission_interface_.registerHandle(
-        transmission_interface::ActuatorToJointPositionHandle(transmission_name, transmission.get(),
-                                                              actuator_data, joint_data));
+  actuator_to_joint_transmission_interface_.registerHandle(transmission_interface::ActuatorToJointPositionHandle(
+      transmission_name, transmission.get(), actuator_data, joint_data));
   ROS_INFO("Registered actuator to joint position transmission interface '%s'", transmission_name.c_str());
 
-  joint_to_actuator_transmission_interface_.registerHandle(
-        transmission_interface::JointToActuatorEffortHandle(transmission_name, transmission.get(),
-                                                            actuator_command_data, joint_command_data));
+  joint_to_actuator_transmission_interface_.registerHandle(transmission_interface::JointToActuatorEffortHandle(
+      transmission_name, transmission.get(), actuator_command_data, joint_command_data));
   ROS_INFO("Registered joint to actuator effort transmission interface '%s'", transmission_name.c_str());
 }
 

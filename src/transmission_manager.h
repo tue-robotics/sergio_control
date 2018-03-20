@@ -10,7 +10,6 @@
 
 #include "./transmission_types.h"
 
-
 class TransmissionManager
 {
 public:
@@ -108,6 +107,4 @@ private:
   //! \brief transmissions_ All transmissions obtained via the URDF
   //!
   std::vector<boost::shared_ptr<transmission_interface::Transmission>> transmissions_;
-
 };
-

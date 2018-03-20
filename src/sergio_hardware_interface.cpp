@@ -8,10 +8,10 @@
 
 namespace sergio_control
 {
-
-SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_interface, const std::string& urdf_string,
-                                                 const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description) :
-  transmission_manager_(urdf_string)
+SergioHardwareInterface::SergioHardwareInterface(
+    const std::string& ethernet_interface, const std::string& urdf_string,
+    const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description)
+  : transmission_manager_(urdf_string)
 {
   // 1. Connect to the ethercat interface
   try
@@ -23,7 +23,8 @@ SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_int
   }
   catch (SocketError)
   {
-    throw std::runtime_error("No socket connection on " + ethernet_interface + ". Try excecuting the following "
+    throw std::runtime_error("No socket connection on " + ethernet_interface +
+                             ". Try excecuting the following "
                              "command: sudo setcap cap_net_raw+ep $(readlink $(catkin_find "
                              "sergio_control sergio_control_node))\n");
   }
@@ -49,34 +50,33 @@ SergioHardwareInterface::SergioHardwareInterface(const std::string& ethernet_int
   transmission_manager_.registerInterfacesToROSControl(this);
 }
 
-void SergioHardwareInterface::read(const ros::Time &, const ros::Duration &)
+void SergioHardwareInterface::read(const ros::Time&, const ros::Duration&)
 {
   ethercat_interface_.receiveAll();
 
   for (Actuator& actuator : actuators_)
   {
-    actuator.state_->position_ = (double) actuator.encoder_in_->read() /
-        actuator.description_.encoder_.encoder_counts_per_revolution_;
-    ROS_INFO("Read actuator position: %.2f from actuator %s",
-             actuator.state_->position_, actuator.state_->name_.c_str());
+    actuator.state_->position_ =
+        (double)actuator.encoder_in_->read() / actuator.description_.encoder_.encoder_counts_per_revolution_;
+    ROS_INFO("Read actuator position: %.2f from actuator %s", actuator.state_->position_,
+             actuator.state_->name_.c_str());
   }
 
   transmission_manager_.propogateAcuatorStatesToJointStates();
 }
 
-void SergioHardwareInterface::write(const ros::Time &, const ros::Duration &)
+void SergioHardwareInterface::write(const ros::Time&, const ros::Duration&)
 {
   transmission_manager_.propogateJointStatesToActuatorStates();
 
   for (const Actuator& actuator : actuators_)
   {
     double voltage = actuator.state_->command_ * actuator.description_.motor_.volt_per_newton_meter_;
-    ROS_INFO("Sending %.5f [Nm] %.5f [Volt] as command to actuator %s", actuator.state_->command_,
-             voltage, actuator.state_->name_.c_str());
+    ROS_INFO("Sending %.5f [Nm] %.5f [Volt] as command to actuator %s", actuator.state_->command_, voltage,
+             actuator.state_->name_.c_str());
     actuator.analogue_out_->write(voltage);
   }
 
   ethercat_interface_.sendAll();
 }
-
 }

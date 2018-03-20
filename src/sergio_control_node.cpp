@@ -5,7 +5,6 @@
 #include "./ethercat_actuator_parser.h"
 #include "./sergio_hardware_interface.h"
 
-
 using namespace sergio_control;
 
 //!
@@ -25,8 +24,9 @@ void controlThread(ros::Rate rate, SergioHardwareInterface* robot, controller_ma
 
     if (rate.cycleTime() > rate.expectedCycleTime())
     {
-      ROS_WARN_STREAM_DELAYED_THROTTLE(10.0, "Cycle time too high: Cycle time: " << rate.cycleTime() <<
-                                       ", Expected cycle time: " << rate.expectedCycleTime());
+      ROS_WARN_STREAM_DELAYED_THROTTLE(10.0, "Cycle time too high: Cycle time: " << rate.cycleTime()
+                                                                                 << ", Expected cycle time: "
+                                                                                 << rate.expectedCycleTime());
     }
 
     last_cycle_time = ros::Time::now();
@@ -34,7 +34,6 @@ void controlThread(ros::Rate rate, SergioHardwareInterface* robot, controller_ma
     rate.sleep();
   }
 }
-
 
 int main(int argc, char* argv[])
 {

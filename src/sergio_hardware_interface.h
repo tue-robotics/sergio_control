@@ -6,18 +6,16 @@
 
 namespace sergio_control
 {
-
 struct Actuator
 {
-  Actuator(const EthercatActuatorDescription& description, ActuatorState* state, EthercatInterface& interface) :
-    state_(state),
-    description_(description)
+  Actuator(const EthercatActuatorDescription& description, ActuatorState* state, EthercatInterface& interface)
+    : state_(state), description_(description)
   {
-    ROS_INFO("Registering analogue out interface on slave %d and channel %d...",
-             (int) description.motor_.slave_, (int) description.motor_.channel_);
+    ROS_INFO("Registering analogue out interface on slave %d and channel %d...", (int)description.motor_.slave_,
+             (int)description.motor_.channel_);
     analogue_out_ = interface.getInterface(description.motor_.slave_, description.motor_.channel_);
-    ROS_INFO("Registering digital in interface on slave %d and channel %d ...",
-             (int) description.encoder_.slave_, (int) description.encoder_.channel_);
+    ROS_INFO("Registering digital in interface on slave %d and channel %d ...", (int)description.encoder_.slave_,
+             (int)description.encoder_.channel_);
     encoder_in_ = interface.getInterface(description.encoder_.slave_, description.encoder_.channel_);
     ROS_INFO("Actuator initialized");
   }
@@ -31,7 +29,6 @@ struct Actuator
 class SergioHardwareInterface : public hardware_interface::RobotHW
 {
 public:
-
   //!
   //! \brief SergioHardwareInterface Hardware interface for the Sergio robot
   //! \param ethernet_interface Network address of the ethercat interface
@@ -66,7 +63,5 @@ private:
   //! \brief actuators_ Holds the ethercat actuators and a pointer to the state
   //!
   std::vector<Actuator> actuators_;
-
 };
-
 }

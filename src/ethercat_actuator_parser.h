@@ -5,7 +5,6 @@
 
 #include "./ethercat_interface_descriptions.h"
 
-
 //!
 //! \brief getSlaveAndChannel Return the slave and channel from a XMLRPC struct
 //! \param param The struct xml rpc
@@ -91,7 +90,7 @@ inline EthercatEncoderInterfaceDescription getEthercatEncoderInterfaceDescriptio
 inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDescription(XmlRpc::XmlRpcValue param)
 {
   std::map<std::string, EthercatActuatorDescription> ethercat_actuators_description;
-  for(XmlRpc::XmlRpcValue::ValueStruct::const_iterator act_it = param.begin(); act_it != param.end(); ++act_it)
+  for (XmlRpc::XmlRpcValue::ValueStruct::const_iterator act_it = param.begin(); act_it != param.end(); ++act_it)
   {
     XmlRpc::XmlRpcValue actuator_name_xmlrpc = act_it->first;
     XmlRpc::XmlRpcValue actuator_description_xmlrpc = act_it->second;
