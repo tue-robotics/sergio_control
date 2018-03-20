@@ -43,7 +43,7 @@ SergioHardwareInterface::SergioHardwareInterface(
       throw std::runtime_error(actuator_state.name_ + " could not be found in the ethercat actuators description");
     }
 
-    actuators_.push_back(Actuator(ethercat_actuator->second, &actuator_state, ethercat_interface_));
+    actuators_.push_back(EthercatActuator(ethercat_actuator->second, &actuator_state, ethercat_interface_));
   }
 
   // 3. Finally register all interfaces to ROS control
@@ -54,12 +54,9 @@ void SergioHardwareInterface::read(const ros::Time&, const ros::Duration&)
 {
   ethercat_interface_.receiveAll();
 
-  for (Actuator& actuator : actuators_)
+  for (EthercatActuator& actuator : actuators_)
   {
-    actuator.state_->position_ =
-        (double)actuator.encoder_in_->read() / actuator.description_.encoder_.encoder_counts_per_revolution_;
-    ROS_INFO("Read actuator position: %.2f from actuator %s", actuator.state_->position_,
-             actuator.state_->name_.c_str());
+    actuator.read();
   }
 
   transmission_manager_.propogateAcuatorStatesToJointStates();
@@ -69,12 +66,9 @@ void SergioHardwareInterface::write(const ros::Time&, const ros::Duration&)
 {
   transmission_manager_.propogateJointStatesToActuatorStates();
 
-  for (const Actuator& actuator : actuators_)
+  for (EthercatActuator& actuator : actuators_)
   {
-    double voltage = actuator.state_->command_ * actuator.description_.motor_.volt_per_newton_meter_;
-    ROS_INFO("Sending %.5f [Nm] %.5f [Volt] as command to actuator %s", actuator.state_->command_, voltage,
-             actuator.state_->name_.c_str());
-    actuator.analogue_out_->write(voltage);
+    actuator.write();
   }
 
   ethercat_interface_.sendAll();

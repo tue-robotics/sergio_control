@@ -36,3 +36,6 @@ target_link_libraries(${PROJECT_NAME}_node transmission_manager ${catkin_LIBRARI
 # Test
 add_executable(test_transmission_manager test/test_transmission_manager.cpp)
 target_link_libraries(test_transmission_manager transmission_manager)
+
+add_executable(test_actuator test/test_actuator.cpp)
+target_link_libraries(test_actuator transmission_manager)

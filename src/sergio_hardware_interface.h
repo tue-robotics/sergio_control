@@ -2,30 +2,11 @@
 
 #include <hardware_interface/robot_hw.h>
 #include "./ethercat_interface_descriptions.h"
+#include "./ethercat_actuator.h"
 #include "./transmission_manager.h"
 
 namespace sergio_control
 {
-struct Actuator
-{
-  Actuator(const EthercatActuatorDescription& description, ActuatorState* state, EthercatInterface& interface)
-    : state_(state), description_(description)
-  {
-    ROS_INFO("Registering analogue out interface on slave %d and channel %d...", (int)description.motor_.slave_,
-             (int)description.motor_.channel_);
-    analogue_out_ = interface.getInterface(description.motor_.slave_, description.motor_.channel_);
-    ROS_INFO("Registering digital in interface on slave %d and channel %d ...", (int)description.encoder_.slave_,
-             (int)description.encoder_.channel_);
-    encoder_in_ = interface.getInterface(description.encoder_.slave_, description.encoder_.channel_);
-    ROS_INFO("Actuator initialized");
-  }
-
-  EthercatActuatorDescription description_;
-  std::shared_ptr<IOInterface> analogue_out_;
-  std::shared_ptr<IOInterface> encoder_in_;
-  ActuatorState* state_;
-};
-
 class SergioHardwareInterface : public hardware_interface::RobotHW
 {
 public:
@@ -62,6 +43,6 @@ private:
   //!
   //! \brief actuators_ Holds the ethercat actuators and a pointer to the state
   //!
-  std::vector<Actuator> actuators_;
+  std::vector<EthercatActuator> actuators_;
 };
 }
