@@ -32,8 +32,10 @@ public:
 
   void read()
   {
-    state_->position_ = (double)encoder_in_->read() / description_.encoder_.encoder_counts_per_revolution_;
-    ROS_INFO("Read actuator position: %.2f from actuator %s", state_->position_, state_->name_.c_str());
+    int encoder_value = encoder_in_->read();
+    state_->position_ = (double)encoder_value / description_.encoder_.encoder_counts_per_revolution_ * 2 * M_PI;
+    ROS_INFO("Read actuator encoder value: %d, position: %.2f from actuator %s",
+             encoder_value, state_->position_, state_->name_.c_str());
   }
 
 private:

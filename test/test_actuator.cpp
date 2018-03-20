@@ -49,16 +49,16 @@ int main(int argc, char** argv)
   EthercatActuatorDescription description;
   description.motor_.slave_ = getParam("motor_slave", 1, &local_nh);
   description.motor_.channel_ = getParam("motor_channel", 0, &local_nh);
-  description.motor_.volt_per_newton_meter_ = getParam("motor_volt_per_newton_meter", 43.808411214953274, &local_nh);
+  description.motor_.volt_per_newton_meter_ = getParam("motor_volt_per_newton_meter", 22.801652754998294, &local_nh);
   description.encoder_.slave_ = getParam("encoder_slave", 2, &local_nh);
   description.encoder_.channel_ = getParam("encoder_channel", 0, &local_nh);
-  description.encoder_.encoder_counts_per_revolution_ = getParam("encoder_counts_per_revolution", 256, &local_nh);
+  description.encoder_.encoder_counts_per_revolution_ = getParam("encoder_counts_per_revolution", 1024, &local_nh);
 
   ActuatorState actuator_state("actuator");
   EthercatActuator ethercat_actuator(description, &actuator_state, ethercat_interface);
 
-  actuator_state.command_ = getParam("command", 0.01, &local_nh);
-  double throttle_period = getParam("throttle_period", 1.0, &local_nh);
+  double mechanical_reduction = getParam("mechanical_reduction", 66.2204081633, &local_nh);
+  actuator_state.command_ = getParam("joint_command", 0.05, &local_nh) / mechanical_reduction;
 
   ros::Rate rate(getParam("rate", 1000, &local_nh));
   while (ros::ok())
@@ -66,9 +66,11 @@ int main(int argc, char** argv)
     ethercat_interface.receiveAll();
 
     ethercat_actuator.read();
-    ROS_INFO_THROTTLE(throttle_period, "Actuator position: %.4f", actuator_state.position_);
+    ROS_INFO("Actuator position: %.8f", actuator_state.position_);
+    ROS_INFO("Joint position: %.8f", actuator_state.position_ / mechanical_reduction);
 
-    ROS_INFO_THROTTLE(throttle_period, "Writing %.4f Nm ...", actuator_state.command_);
+    ROS_INFO("Writing %.8f Nm to joint", actuator_state.command_ * mechanical_reduction);
+    ROS_INFO("Writing %.8f Nm to actuator", actuator_state.command_);
     ethercat_actuator.write();
 
     ethercat_interface.sendAll();

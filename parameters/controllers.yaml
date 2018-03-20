@@ -31,9 +31,9 @@ sergio_control_node:
       encoder:
         slave: 2
         channel: 0
-        encoder_counts_per_revolution: 256
+        encoder_counts_per_revolution: 1024 # 256 impulses but we count every transition, so * 4 = 1024
       motor:
         slave: 1
         channel: 0
-        volt_per_newton_meter: 43.808411214953274 # Max torque = 0.0856 Nm, Voltage ranges from -3.75 V to 3.75 V
+        volt_per_newton_meter: 22.801652754998294 # motor_constant = Nm/A = 25.9e-3, elmo constant 1.6933, V/Nm => 1 / (25.9e-3 * 1.6933)
   frequency: 100
