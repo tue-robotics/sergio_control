@@ -50,13 +50,13 @@ SergioHardwareInterface::SergioHardwareInterface(
   transmission_manager_.registerInterfacesToROSControl(this);
 }
 
-void SergioHardwareInterface::read(const ros::Time&, const ros::Duration&)
+void SergioHardwareInterface::read(const ros::Time&, const ros::Duration& period)
 {
   ethercat_interface_.receiveAll();
 
   for (EthercatActuator& actuator : actuators_)
   {
-    actuator.read();
+    actuator.read(period);
   }
 
   transmission_manager_.propogateAcuatorStatesToJointStates();

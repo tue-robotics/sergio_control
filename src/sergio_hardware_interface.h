@@ -22,7 +22,7 @@ public:
   //!
   //! \brief read Read data from ethercat interface
   //!
-  void read(const ros::Time& /*time*/, const ros::Duration& /*period*/);
+  void read(const ros::Time& /*time*/, const ros::Duration& period);
 
   //!
   //! \brief write Write data to ethercat interface

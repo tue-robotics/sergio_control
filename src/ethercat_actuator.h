@@ -26,16 +26,20 @@ public:
   bool write()
   {
     double voltage = state_->command_ * description_.motor_.volt_per_newton_meter_;
-    ROS_INFO("Sending %.5f [Nm] %.5f [V] as command to actuator %s", state_->command_, voltage, state_->name_.c_str());
+    ROS_DEBUG("Sending %.5f [Nm] %.5f [V] as command to actuator %s", state_->command_, voltage, state_->name_.c_str());
     return analogue_out_->write(voltage);
   }
 
-  void read()
+  void read(const ros::Duration& period)
   {
+    // Store last position for velocity calculation
+    double last_position = state_->position_;
+
     int encoder_value = encoder_in_->read();
     state_->position_ = (double)encoder_value / description_.encoder_.encoder_counts_per_revolution_ * 2 * M_PI;
-    ROS_INFO("Read actuator encoder value: %d, position: %.2f from actuator %s",
-             encoder_value, state_->position_, state_->name_.c_str());
+    state_->velocity_ = (state_->position_ - last_position) / period.toSec();
+    ROS_DEBUG("Read actuator encoder value: %d, position: %.5f, velocity: %.5f from actuator %s",
+              encoder_value, state_->position_, state_->velocity_, state_->name_.c_str());
   }
 
 private:

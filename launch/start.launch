@@ -3,7 +3,6 @@
 
 	<param name="robot_description" textfile="$(find sergio_control)/test/single_joint.urdf" />
 
-
 	<node name="sergio_control_node" pkg="sergio_control" type="sergio_control_node" output="screen" />
 
 	<!-- Load the default controllers -->

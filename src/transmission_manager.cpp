@@ -109,7 +109,9 @@ void TransmissionManager::registerTransmission(
   transmissions_.push_back(transmission);
 
   // Register transmissions
-  actuator_to_joint_transmission_interface_.registerHandle(transmission_interface::ActuatorToJointPositionHandle(
+  actuator_to_joint_position_transmission_interface_.registerHandle(transmission_interface::ActuatorToJointPositionHandle(
+      transmission_name, transmission.get(), actuator_data, joint_data));
+  actuator_to_joint_velocity_transmission_interface_.registerHandle(transmission_interface::ActuatorToJointVelocityHandle(
       transmission_name, transmission.get(), actuator_data, joint_data));
   ROS_INFO("Registered actuator to joint position transmission interface '%s'", transmission_name.c_str());
 
@@ -124,13 +126,15 @@ void TransmissionManager::registerInterfacesToROSControl(hardware_interface::Int
   interface_manager->registerInterface(&actuator_effort_interface_);
   interface_manager->registerInterface(&joint_state_interface_);
   interface_manager->registerInterface(&joint_effort_interface_);
-  interface_manager->registerInterface(&actuator_to_joint_transmission_interface_);
+  interface_manager->registerInterface(&actuator_to_joint_position_transmission_interface_);
+  interface_manager->registerInterface(&actuator_to_joint_velocity_transmission_interface_);
   interface_manager->registerInterface(&joint_to_actuator_transmission_interface_);
 }
 
 void TransmissionManager::propogateAcuatorStatesToJointStates()
 {
-  actuator_to_joint_transmission_interface_.propagate();
+  actuator_to_joint_position_transmission_interface_.propagate();
+  actuator_to_joint_velocity_transmission_interface_.propagate();
 }
 
 void TransmissionManager::propogateJointStatesToActuatorStates()

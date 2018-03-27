@@ -96,7 +96,12 @@ private:
   //!
   //! \brief actuator_to_joint_transmission_interface_ Actuator radians to joint radians
   //!
-  transmission_interface::ActuatorToJointPositionInterface actuator_to_joint_transmission_interface_;
+  transmission_interface::ActuatorToJointPositionInterface actuator_to_joint_position_transmission_interface_;
+
+  //!
+  //! \brief actuator_to_joint_velocity_transmission_interface_ Actuator radians / sec to joint radians / sec
+  //!
+  transmission_interface::ActuatorToJointVelocityInterface actuator_to_joint_velocity_transmission_interface_;
 
   //!
   //! \brief joint_to_actuator_transmission_interface_ Joint efforts to actuator efforts
