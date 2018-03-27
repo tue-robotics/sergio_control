@@ -2,9 +2,6 @@
 
 #include <ethercat_interface/exceptions.h>
 
-#include <transmission_interface/transmission_parser.h>
-#include <transmission_interface/transmission_loader.h>
-#include <transmission_interface/simple_transmission_loader.h>
 
 namespace sergio_control
 {

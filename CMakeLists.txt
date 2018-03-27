@@ -9,7 +9,6 @@ find_package(catkin REQUIRED COMPONENTS
   diagnostic_updater
   ethercat_interface
   hardware_interface
-  joint_state_controller
   roscpp
   transmission_interface
 )
@@ -39,3 +38,6 @@ target_link_libraries(test_transmission_manager transmission_manager)
 
 add_executable(test_actuator test/test_actuator.cpp)
 target_link_libraries(test_actuator ${catkin_LIBRARIES})
+
+add_executable(test_hardware_interface test/test_hardware_interface.cpp)
+target_link_libraries(test_hardware_interface transmission_manager)
