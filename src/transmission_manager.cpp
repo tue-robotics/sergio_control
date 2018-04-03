@@ -4,6 +4,8 @@
 #include <transmission_interface/transmission_loader.h>
 #include <transmission_interface/simple_transmission_loader.h>
 
+namespace transmission_manager
+{
 TransmissionManager::TransmissionManager(const std::string& urdf_string)
 {
   // 2. Parse the urdf and register all transmissions
@@ -140,4 +142,5 @@ void TransmissionManager::propogateAcuatorStatesToJointStates()
 void TransmissionManager::propogateJointStatesToActuatorStates()
 {
   joint_to_actuator_transmission_interface_.propagate();
+}
 }

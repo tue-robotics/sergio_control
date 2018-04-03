@@ -46,7 +46,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  EthercatActuatorDescription description;
+  ethercat_hardware_interface::EthercatActuatorDescription description;
   description.motor_.slave_ = getParam("motor_slave", 1, &local_nh);
   description.motor_.channel_ = getParam("motor_channel", 0, &local_nh);
   description.motor_.volt_per_newton_meter_ = getParam("motor_volt_per_newton_meter", 22.801652754998294, &local_nh);
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
   description.encoder_.encoder_counts_per_revolution_ = getParam("encoder_counts_per_revolution", 1024, &local_nh);
 
   ActuatorState actuator_state("actuator");
-  EthercatActuator ethercat_actuator(description, &actuator_state, ethercat_interface);
+  ethercat_hardware_interface::EthercatActuator ethercat_actuator(description, &actuator_state, ethercat_interface);
 
   double mechanical_reduction = getParam("mechanical_reduction", 66.2204081633, &local_nh);
   actuator_state.command_ = getParam("command", 0.05, &local_nh) / mechanical_reduction;

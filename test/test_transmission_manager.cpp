@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
   ros::NodeHandle local_nh("~");
   std::string urdf_string = local_nh.param("/robot_description", std::string(""));
 
-  TransmissionManager transmission_manager(urdf_string);
+  transmission_manager::TransmissionManager transmission_manager(urdf_string);
 
   // First check if we can propagate the command on the joint to the command of the actuator
   setJointStatesCommand(transmission_manager.joint_states_, 0.1);

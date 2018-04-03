@@ -10,6 +10,8 @@
 
 #include "./transmission_types.h"
 
+namespace transmission_manager
+{
 class TransmissionManager
 {
 public:
@@ -113,3 +115,4 @@ private:
   //!
   std::vector<boost::shared_ptr<transmission_interface::Transmission>> transmissions_;
 };
+}

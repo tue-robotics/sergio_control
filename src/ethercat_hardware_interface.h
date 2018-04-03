@@ -5,19 +5,19 @@
 #include "./ethercat_actuator.h"
 #include "./transmission_manager.h"
 
-namespace sergio_control
+namespace ethercat_hardware_interface
 {
-class SergioHardwareInterface : public hardware_interface::RobotHW
+class EthercatHardwareInterface : public hardware_interface::RobotHW
 {
 public:
   //!
-  //! \brief SergioHardwareInterface Hardware interface for the Sergio robot
+  //! \brief EthercatHardwareInterface Hardware interface for a robot that can be controller with ethercat
   //! \param ethernet_interface Network address of the ethercat interface
   //! \param urdf_string URDF String used to parse transmission out of the robot model
   //! \param ethercat_actuators_description Available ethercat actuators; names should match the actuator names in urdf
   //!
-  SergioHardwareInterface(const std::string& ethernet_interface, const std::string& urdf_string,
-                          const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description);
+  EthercatHardwareInterface(const std::string& ethernet_interface, const std::string& urdf_string,
+                            const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description);
 
   //!
   //! \brief read Read data from ethercat interface
@@ -33,7 +33,7 @@ private:
   //!
   //! \brief transmission_manager_ Manages the transmissions and states of all actuators and joints
   //!
-  TransmissionManager transmission_manager_;
+  transmission_manager::TransmissionManager transmission_manager_;
 
   //!
   //! \brief ethercat_interface_ IO interface

@@ -1,11 +1,11 @@
-#include "sergio_hardware_interface.h"
+#include "ethercat_hardware_interface.h"
 
 #include <ethercat_interface/exceptions.h>
 
 
-namespace sergio_control
+namespace ethercat_hardware_interface
 {
-SergioHardwareInterface::SergioHardwareInterface(
+EthercatHardwareInterface::EthercatHardwareInterface(
     const std::string& ethernet_interface, const std::string& urdf_string,
     const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description)
   : transmission_manager_(urdf_string)
@@ -47,7 +47,7 @@ SergioHardwareInterface::SergioHardwareInterface(
   transmission_manager_.registerInterfacesToROSControl(this);
 }
 
-void SergioHardwareInterface::read(const ros::Time&, const ros::Duration& period)
+void EthercatHardwareInterface::read(const ros::Time&, const ros::Duration& period)
 {
   ethercat_interface_.receiveAll();
 
@@ -59,7 +59,7 @@ void SergioHardwareInterface::read(const ros::Time&, const ros::Duration& period
   transmission_manager_.propogateAcuatorStatesToJointStates();
 }
 
-void SergioHardwareInterface::write(const ros::Time&, const ros::Duration&)
+void EthercatHardwareInterface::write(const ros::Time&, const ros::Duration&)
 {
   transmission_manager_.propogateJointStatesToActuatorStates();
 

@@ -5,6 +5,8 @@
 #include <iostream>
 #include <ethercat_interface/ethercat_interface.h>
 
+namespace ethercat_hardware_interface
+{
 struct EthercatInterfaceDescription
 {
   size_t slave_ = 0;    // Ethercat slave id
@@ -41,4 +43,5 @@ inline std::ostream& operator<<(std::ostream& o, const EthercatActuatorDescripti
 {
   o << "EthercatActuatorDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ")";
   return o;
+}
 }

@@ -5,18 +5,6 @@ Control SERGIO with ROS Control
 
 [![Build Status](https://travis-ci.org/tue-robotics/sergio_control.svg)](https://travis-ci.org/tue-robotics/sergio_control)
 
-## Launch
-
-### start.launch (WIP)
-
-WIP
-
-## Nodes
-
-### sergio_control_node
-
-WIP
-
 ## Test
 
 ### Launch

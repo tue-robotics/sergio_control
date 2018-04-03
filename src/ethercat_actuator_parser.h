@@ -5,6 +5,9 @@
 
 #include "./ethercat_interface_descriptions.h"
 
+namespace ethercat_hardware_interface
+{
+
 //!
 //! \brief getSlaveAndChannel Return the slave and channel from a XMLRPC struct
 //! \param param The struct xml rpc
@@ -125,4 +128,5 @@ inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDe
   }
 
   return ethercat_actuators_description;
+}
 }

@@ -20,17 +20,15 @@ include_directories(
 )
 
 add_library(transmission_manager src/transmission_manager.cpp)
-
 target_link_libraries(transmission_manager
   ${catkin_LIBRARIES}
 )
 
-add_executable(${PROJECT_NAME}_node
-  src/${PROJECT_NAME}_node.cpp
-  src/sergio_hardware_interface.cpp
+add_library(ethercat_hardware_interface src/ethercat_hardware_interface.cpp)
+target_link_libraries(ethercat_hardware_interface
+  transmission_manager
+  ${catkin_LIBRARIES}
 )
-
-target_link_libraries(${PROJECT_NAME}_node transmission_manager ${catkin_LIBRARIES})
 
 # Test
 add_executable(test_transmission_manager test/test_transmission_manager.cpp)
@@ -39,5 +37,5 @@ target_link_libraries(test_transmission_manager transmission_manager)
 add_executable(test_actuator test/test_actuator.cpp)
 target_link_libraries(test_actuator ${catkin_LIBRARIES})
 
-add_executable(test_hardware_interface test/test_hardware_interface.cpp)
-target_link_libraries(test_hardware_interface transmission_manager)
+add_executable(test_ethercat_hardware_interface test/test_ethercat_hardware_interface.cpp)
+target_link_libraries(test_ethercat_hardware_interface ethercat_hardware_interface ${catkin_LIBRARIES})

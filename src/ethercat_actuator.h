@@ -5,6 +5,8 @@
 #include "./ethercat_interface_descriptions.h"
 #include "./transmission_types.h"
 
+namespace ethercat_hardware_interface
+{
 class EthercatActuator
 {
 public:
@@ -46,3 +48,4 @@ private:
   std::shared_ptr<IOInterface> analogue_out_;
   std::shared_ptr<IOInterface> encoder_in_;
 };
+}

@@ -2,10 +2,11 @@
 #include <ros/ros.h>
 #include <controller_manager/controller_manager.h>
 
-#include "./ethercat_actuator_parser.h"
-#include "./sergio_hardware_interface.h"
+#include "../src/ethercat_actuator.h"
+#include "../src/ethercat_actuator_parser.h"
+#include "../src/ethercat_interface_descriptions.h"
+#include "../src/ethercat_hardware_interface.h"
 
-using namespace sergio_control;
 
 //!
 //! \brief controlThread Separate thread for running the controller
@@ -13,7 +14,7 @@ using namespace sergio_control;
 //! \param robot Pointer to the robot hardare interface
 //! \param cm Controller manager interface to ROS control
 //!
-void controlThread(ros::Rate rate, SergioHardwareInterface* robot, controller_manager::ControllerManager* cm)
+void controlThread(ros::Rate rate, ethercat_hardware_interface::EthercatHardwareInterface* robot, controller_manager::ControllerManager* cm)
 {
   ros::Time last_cycle_time = ros::Time::now();
   while (ros::ok())
@@ -37,19 +38,19 @@ void controlThread(ros::Rate rate, SergioHardwareInterface* robot, controller_ma
 
 int main(int argc, char* argv[])
 {
-  ros::init(argc, argv, "sergio_control");
+  ros::init(argc, argv, "test_hardware_interface");
 
   ros::NodeHandle local_nh("~");
   ros::Rate rate(local_nh.param("rate", 50));
   std::string ethernet_interface = local_nh.param("ethercat_interface", std::string("eno1"));
   std::string urdf_string = local_nh.param("/robot_description", std::string(""));
 
-  std::map<std::string, EthercatActuatorDescription> ethercat_actuators_description;
+  std::map<std::string, ethercat_hardware_interface::EthercatActuatorDescription> ethercat_actuators_description;
   try
   {
     XmlRpc::XmlRpcValue ethercat_actuators_param;
     local_nh.getParam("ethercat_actuators", ethercat_actuators_param);
-    ethercat_actuators_description = getEthercatActuatorsDescription(ethercat_actuators_param);
+    ethercat_actuators_description = ethercat_hardware_interface::getEthercatActuatorsDescription(ethercat_actuators_param);
   }
   catch (const std::exception& e)
   {
@@ -59,19 +60,19 @@ int main(int argc, char* argv[])
 
   try
   {
-    SergioHardwareInterface robot(ethernet_interface, urdf_string, ethercat_actuators_description);
+    ethercat_hardware_interface::EthercatHardwareInterface robot(ethernet_interface, urdf_string, ethercat_actuators_description);
 
     controller_manager::ControllerManager cm(&robot);
 
     boost::thread(boost::bind(controlThread, rate, &robot, &cm));
 
-    ROS_INFO("Sergio Control initialized, spinning ...");
+    ROS_INFO("Test Control initialized, spinning ...");
 
     ros::spin();
   }
   catch (const std::exception& e)
   {
-    ROS_FATAL_STREAM("Sergio control error: " << e.what());
+    ROS_FATAL_STREAM("Test control error: " << e.what());
     return 1;
   }
 
