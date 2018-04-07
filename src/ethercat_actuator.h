@@ -15,10 +15,10 @@ public:
   {
     ROS_INFO("Registering analogue out interface on slave %d and channel %d...", (int)description.motor_.slave_,
              (int)description.motor_.channel_);
-    analogue_out_ = interface.getInterface(description.motor_.slave_, description.motor_.channel_);
+    analogue_out_ = interface.getSlave(description.motor_.slave_).getOutput(description.motor_.channel_);
     ROS_INFO("Registering digital in interface on slave %d and channel %d ...", (int)description.encoder_.slave_,
              (int)description.encoder_.channel_);
-    encoder_in_ = interface.getInterface(description.encoder_.slave_, description.encoder_.channel_);
+    encoder_in_ = interface.getSlave(description.encoder_.slave_).getInput(description.encoder_.channel_);
     ROS_INFO("Actuator initialized");
   }
 
@@ -45,7 +45,7 @@ public:
   }
 
 private:
-  std::shared_ptr<IOInterface> analogue_out_;
-  std::shared_ptr<IOInterface> encoder_in_;
+  std::shared_ptr<WriteInterface> analogue_out_;
+  std::shared_ptr<ReadInterface> encoder_in_;
 };
 }

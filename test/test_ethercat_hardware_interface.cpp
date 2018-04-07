@@ -60,7 +60,9 @@ int main(int argc, char* argv[])
 
   try
   {
-    ethercat_hardware_interface::EthercatHardwareInterface robot(ethernet_interface, urdf_string, ethercat_actuators_description);
+    ethercat_hardware_interface::EthercatHardwareInterface robot(ethernet_interface, urdf_string,
+                                                                 ethercat_actuators_description,
+                                                                 "sergio_control", "test_ethercat_hardware_interface");
 
     controller_manager::ControllerManager cm(&robot);
 

@@ -10,6 +10,10 @@ joint1_position_controller:
    type: effort_controllers/JointPositionController
    joint: joint1
    pid: {p: 2.0, i: 0.0, d: 0.06}
+joint2_position_controller:
+   type: effort_controllers/JointPositionController
+   joint: joint2
+   pid: {p: 2.0, i: 0.0, d: 0.06}
 
 test_single_joint_position_controller:
   ethercat_actuators:
@@ -17,9 +21,18 @@ test_single_joint_position_controller:
       encoder:
         slave: 2
         channel: 0
-        encoder_counts_per_revolution: 2000 # 500 impulses but we count every transition, so * 4 = 2000
+        encoder_counts_per_revolution: 2000 # 500 impulses but we count every transition, so * 4
       motor:
         slave: 1
         channel: 0
         volt_per_newton_meter: 6.41 # motor_constant [Nm/A] = 23.4e-3, amplifier_gain [A/V] = 25 / 3.75 => V/Nm = 1 / (motor_constant * amplifier_gain)
+    actuator2:
+      encoder:
+        slave: 3
+        channel: 0
+        encoder_counts_per_revolution: 1024 # 256 impulses but we count every transition, so * 4
+      motor:
+        slave: 1
+        channel: 1
+        volt_per_newton_meter: 5.79 # motor_constant [Nm/A] = 25.9e-3, amplifier_gain [A/V] = 25 / 3.75 => V/Nm = 1 / (motor_constant * amplifier_gain)
   rate: 500

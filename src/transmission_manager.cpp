@@ -3,6 +3,7 @@
 #include <transmission_interface/transmission_parser.h>
 #include <transmission_interface/transmission_loader.h>
 #include <transmission_interface/simple_transmission_loader.h>
+#include <transmission_interface/differential_transmission_loader.h>
 
 namespace transmission_manager
 {
@@ -25,6 +26,11 @@ TransmissionManager::TransmissionManager(const std::string& urdf_string)
     if (transmission_info.type_ == "transmission_interface/SimpleTransmission")
     {
       transmission_interface::SimpleTransmissionLoader loader;
+      transmission = loader.load(transmission_info);
+    }
+    else if (transmission_info.type_ == "transmission_interface/DifferentialTransmission")
+    {
+      transmission_interface::DifferentialTransmissionLoader loader;
       transmission = loader.load(transmission_info);
     }
     // Optionally add more transmissions here
@@ -117,7 +123,7 @@ void TransmissionManager::registerTransmission(
       transmission_name, transmission.get(), actuator_data, joint_data));
   ROS_INFO("Registered actuator to joint position transmission interface '%s'", transmission_name.c_str());
 
-  joint_to_actuator_transmission_interface_.registerHandle(transmission_interface::JointToActuatorEffortHandle(
+  joint_to_actuator_effort_transmission_interface_.registerHandle(transmission_interface::JointToActuatorEffortHandle(
       transmission_name, transmission.get(), actuator_command_data, joint_command_data));
   ROS_INFO("Registered joint to actuator effort transmission interface '%s'", transmission_name.c_str());
 }
@@ -130,7 +136,7 @@ void TransmissionManager::registerInterfacesToROSControl(hardware_interface::Int
   interface_manager->registerInterface(&joint_effort_interface_);
   interface_manager->registerInterface(&actuator_to_joint_position_transmission_interface_);
   interface_manager->registerInterface(&actuator_to_joint_velocity_transmission_interface_);
-  interface_manager->registerInterface(&joint_to_actuator_transmission_interface_);
+  interface_manager->registerInterface(&joint_to_actuator_effort_transmission_interface_);
 }
 
 void TransmissionManager::propogateAcuatorStatesToJointStates()
@@ -141,6 +147,6 @@ void TransmissionManager::propogateAcuatorStatesToJointStates()
 
 void TransmissionManager::propogateJointStatesToActuatorStates()
 {
-  joint_to_actuator_transmission_interface_.propagate();
+  joint_to_actuator_effort_transmission_interface_.propagate();
 }
 }

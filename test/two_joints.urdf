@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<robot name="single_joint">
+
+  <link name="base_link" />
+  <link name="link1" />
+  <link name="link2" />
+
+  <joint name="joint1" type="continuous">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="0.2 0.0 0"/>
+    <parent link="base_link"/>
+    <child link="link1"/>
+  </joint>
+
+  <transmission name="joint1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator1">
+      <mechanicalReduction>33.0625</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <joint name="joint2" type="continuous">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="1.0 0.0 0"/>
+    <parent link="base_link"/>
+    <child link="link2"/>
+  </joint>
+
+  <transmission name="joint2_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator2">
+      <mechanicalReduction>66.22</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>

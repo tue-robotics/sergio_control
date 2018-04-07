@@ -5,9 +5,8 @@
 
 namespace ethercat_hardware_interface
 {
-EthercatHardwareInterface::EthercatHardwareInterface(
-    const std::string& ethernet_interface, const std::string& urdf_string,
-    const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description)
+EthercatHardwareInterface::EthercatHardwareInterface(const std::string& ethernet_interface, const std::string& urdf_string,
+    const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description, const std::string& package_name, const std::string& executable_name)
   : transmission_manager_(urdf_string)
 {
   // 1. Connect to the ethercat interface
@@ -20,10 +19,9 @@ EthercatHardwareInterface::EthercatHardwareInterface(
   }
   catch (SocketError)
   {
-    throw std::runtime_error("No socket connection on " + ethernet_interface +
-                             ". Try excecuting the following "
-                             "command: sudo setcap cap_net_raw+ep $(readlink $(catkin_find "
-                             "sergio_control sergio_control_node))\n");
+    throw std::runtime_error("No socket connection on " + ethernet_interface + ". Try excecuting the following "
+                             "command: sudo setcap cap_net_raw+ep $(readlink $(catkin_find " + package_name + " " +
+                             executable_name + "))\n");
   }
 
   // 2. Get the actuators based on the description parsed from the URDF

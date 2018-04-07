@@ -108,7 +108,7 @@ private:
   //!
   //! \brief joint_to_actuator_transmission_interface_ Joint efforts to actuator efforts
   //!
-  transmission_interface::JointToActuatorEffortInterface joint_to_actuator_transmission_interface_;
+  transmission_interface::JointToActuatorEffortInterface joint_to_actuator_effort_transmission_interface_;
 
   //!
   //! \brief transmissions_ All transmissions obtained via the URDF

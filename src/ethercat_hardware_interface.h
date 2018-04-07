@@ -15,9 +15,12 @@ public:
   //! \param ethernet_interface Network address of the ethercat interface
   //! \param urdf_string URDF String used to parse transmission out of the robot model
   //! \param ethercat_actuators_description Available ethercat actuators; names should match the actuator names in urdf
+  //! \param package_name ROS package name
+  //! \param executable_name Name of the executable within the ROS package
   //!
   EthercatHardwareInterface(const std::string& ethernet_interface, const std::string& urdf_string,
-                            const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description);
+                            const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description,
+                            const std::string& package_name, const std::string& executable_name);
 
   //!
   //! \brief read Read data from ethercat interface
