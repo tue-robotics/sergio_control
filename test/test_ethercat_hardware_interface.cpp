@@ -7,14 +7,14 @@
 #include "../src/ethercat_interface_descriptions.h"
 #include "../src/ethercat_hardware_interface.h"
 
-
 //!
 //! \brief controlThread Separate thread for running the controller
 //! \param rate Rate of the control loop
 //! \param robot Pointer to the robot hardare interface
 //! \param cm Controller manager interface to ROS control
 //!
-void controlThread(ros::Rate rate, ethercat_hardware_interface::EthercatHardwareInterface* robot, controller_manager::ControllerManager* cm)
+void controlThread(ros::Rate rate, ethercat_hardware_interface::EthercatHardwareInterface* robot,
+                   controller_manager::ControllerManager* cm)
 {
   ros::Time last_cycle_time = ros::Time::now();
   while (ros::ok())
@@ -50,7 +50,8 @@ int main(int argc, char* argv[])
   {
     XmlRpc::XmlRpcValue ethercat_actuators_param;
     local_nh.getParam("ethercat_actuators", ethercat_actuators_param);
-    ethercat_actuators_description = ethercat_hardware_interface::getEthercatActuatorsDescription(ethercat_actuators_param);
+    ethercat_actuators_description =
+        ethercat_hardware_interface::getEthercatActuatorsDescription(ethercat_actuators_param);
   }
   catch (const std::exception& e)
   {
@@ -61,8 +62,8 @@ int main(int argc, char* argv[])
   try
   {
     ethercat_hardware_interface::EthercatHardwareInterface robot(ethernet_interface, urdf_string,
-                                                                 ethercat_actuators_description,
-                                                                 "sergio_control", "test_ethercat_hardware_interface");
+                                                                 ethercat_actuators_description, "sergio_control",
+                                                                 "test_ethercat_hardware_interface");
 
     controller_manager::ControllerManager cm(&robot);
 

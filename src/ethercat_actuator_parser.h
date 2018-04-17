@@ -7,7 +7,6 @@
 
 namespace ethercat_hardware_interface
 {
-
 //!
 //! \brief getSlaveAndChannel Return the slave and channel from a XMLRPC struct
 //! \param param The struct xml rpc

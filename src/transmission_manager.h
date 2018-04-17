@@ -38,14 +38,14 @@ public:
   void propogateJointStatesToActuatorStates();
 
   //!
-  //! \brief actuator_states_ State and references of all ethercat actuators
+  //! \brief actuator_states_ State and commands of all ethercat actuators
   //!
-  std::vector<ActuatorState> actuator_states_;
+  std::vector<std::shared_ptr<ActuatorState>> actuator_states_;
 
   //!
-  //! \brief joint_states_ State and references of all registered joints
+  //! \brief joint_states_ State and commands of all registered joints
   //!
-  std::vector<JointState> joint_states_;
+  std::vector<std::shared_ptr<JointState>> joint_states_;
 
 private:
   //!
@@ -104,6 +104,11 @@ private:
   //! \brief actuator_to_joint_velocity_transmission_interface_ Actuator radians / sec to joint radians / sec
   //!
   transmission_interface::ActuatorToJointVelocityInterface actuator_to_joint_velocity_transmission_interface_;
+
+  //!
+  //! \brief actuator_to_joint_effort_transmission_interface_ Actuator effort nm to joints effort nm
+  //!
+  transmission_interface::ActuatorToJointEffortInterface actuator_to_joint_effort_transmission_interface_;
 
   //!
   //! \brief joint_to_actuator_transmission_interface_ Joint efforts to actuator efforts

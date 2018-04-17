@@ -3,36 +3,38 @@
 #include "../src/ethercat_actuator_parser.h"
 #include "../src/transmission_manager.h"
 
-void setActuatorStatesPosition(std::vector<ActuatorState>& states, double position, double velocity, double effort)
+void setActuatorStatesPosition(std::vector<std::shared_ptr<ActuatorState>> states, double position, double velocity,
+                               double effort)
 {
   ROS_INFO("Setting actuator states position=%.2f, velocity=%.3f, effort=%.2f", position, velocity, effort);
-  for (ActuatorState& state : states)
+  for (auto state : states)
   {
-    state.position_ = position;
-    state.velocity_ = velocity;
-    state.effort_ = effort;
+    state->position_ = position;
+    state->velocity_ = velocity;
+    state->effort_ = effort;
   }
 }
 
-void setJointStatesCommand(std::vector<JointState>& states, double command)
+void setJointStatesCommand(std::vector<std::shared_ptr<JointState>> states, double command)
 {
   ROS_INFO("Setting joint states command to %.2f", command);
-  for (JointState& state : states)
+  for (auto state : states)
   {
-    state.command_ = command;
+    state->command_ = command;
   }
 }
 
-void printState(std::vector<JointState> joint_states, std::vector<ActuatorState> actuator_states)
+void printState(std::vector<std::shared_ptr<JointState>> joint_states,
+                std::vector<std::shared_ptr<ActuatorState>> actuator_states)
 {
   ROS_INFO("-------");
-  for (JointState& joint_state : joint_states)
+  for (auto joint_state : joint_states)
   {
-    ROS_INFO_STREAM(joint_state);
+    ROS_INFO_STREAM(*joint_state);
   }
-  for (ActuatorState& actuator_state : actuator_states)
+  for (auto actuator_state : actuator_states)
   {
-    ROS_INFO_STREAM(actuator_state);
+    ROS_INFO_STREAM(*actuator_state);
   }
   ROS_INFO("-------");
 }
