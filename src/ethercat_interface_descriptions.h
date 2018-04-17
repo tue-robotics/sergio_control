@@ -1,3 +1,9 @@
+//
+// Copyright (c) 2018 TUe Robotics
+//
+// @author Rein Appeldoorn (reinzor)
+//
+
 #pragma once
 
 #include <vector>
@@ -44,4 +50,4 @@ inline std::ostream& operator<<(std::ostream& o, const EthercatActuatorDescripti
   o << "EthercatActuatorDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ")";
   return o;
 }
-}
+}  // namespace ethercat_hardware_interface

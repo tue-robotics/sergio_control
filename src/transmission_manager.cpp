@@ -1,9 +1,17 @@
+//
+// Copyright (c) 2018 TUe Robotics
+//
+// @author Rein Appeldoorn (reinzor)
+//
+
 #include "./transmission_manager.h"
 
 #include <transmission_interface/transmission_parser.h>
 #include <transmission_interface/transmission_loader.h>
 #include <transmission_interface/simple_transmission_loader.h>
 #include <transmission_interface/differential_transmission_loader.h>
+#include <string>
+#include <vector>
 
 namespace transmission_manager
 {
@@ -164,4 +172,4 @@ void TransmissionManager::propogateJointStatesToActuatorStates()
   // that we propagate this joint effort to the corresponding actuators
   joint_to_actuator_effort_transmission_interface_.propagate();
 }
-}
+}  // namespace transmission_manager

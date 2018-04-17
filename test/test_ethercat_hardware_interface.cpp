@@ -1,3 +1,9 @@
+//
+// Copyright (c) 2018 TUe Robotics
+//
+// @author Rein Appeldoorn (reinzor)
+//
+
 #include <string>
 #include <ros/ros.h>
 #include <controller_manager/controller_manager.h>

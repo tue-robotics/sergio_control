@@ -1,6 +1,16 @@
+//
+// Copyright (c) 2018 TUe Robotics
+//
+// @author Rein Appeldoorn (reinzor)
+//
+
 #pragma once
 
 #include <hardware_interface/robot_hw.h>
+#include <map>
+#include <string>
+#include <vector>
+
 #include "./ethercat_interface_descriptions.h"
 #include "./ethercat_actuator.h"
 #include "./transmission_manager.h"
@@ -48,4 +58,4 @@ private:
   //!
   std::vector<EthercatActuator> actuators_;
 };
-}
+}  // namespace ethercat_hardware_interface

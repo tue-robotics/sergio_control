@@ -1,3 +1,9 @@
+//
+// Copyright (c) 2018 TUe Robotics
+//
+// @author Rein Appeldoorn (reinzor)
+//
+
 #include <ros/ros.h>
 
 #include "../src/ethercat_actuator_parser.h"

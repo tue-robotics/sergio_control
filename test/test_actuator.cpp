@@ -1,3 +1,9 @@
+//
+// Copyright (c) 2018 TUe Robotics
+//
+// @author Rein Appeldoorn (reinzor)
+//
+
 #include <ros/ros.h>
 #include <ethercat_interface/ethercat_interface.h>
 #include <ethercat_interface/exceptions.h>
@@ -55,7 +61,7 @@ int main(int argc, char** argv)
   description.encoder_.encoder_counts_per_revolution_ = getParam("encoder_counts_per_revolution", 1024, &local_nh);
 
   std::shared_ptr<ActuatorState> actuator_state(new ActuatorState("actuator"));
-  ethercat_hardware_interface::EthercatActuator ethercat_actuator(description, ethercat_interface, actuator_state);
+  ethercat_hardware_interface::EthercatActuator ethercat_actuator(description, &ethercat_interface, actuator_state);
 
   double mechanical_reduction = getParam("mechanical_reduction", 66.2204081633, &local_nh);
   actuator_state->command_ = getParam("command", 0.05, &local_nh) / mechanical_reduction;

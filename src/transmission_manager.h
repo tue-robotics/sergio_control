@@ -1,3 +1,9 @@
+//
+// Copyright (c) 2018 TUe Robotics
+//
+// @author Rein Appeldoorn (reinzor)
+//
+
 #pragma once
 
 #include <hardware_interface/joint_command_interface.h>
@@ -7,6 +13,8 @@
 #include <hardware_interface/internal/interface_manager.h>
 #include <transmission_interface/transmission_interface.h>
 #include <transmission_interface/transmission_info.h>
+#include <string>
+#include <vector>
 
 #include "./transmission_types.h"
 
@@ -19,7 +27,7 @@ public:
   //! \brief TransmissionManager
   //! \param urdf_string
   //!
-  TransmissionManager(const std::string& urdf_string);
+  explicit TransmissionManager(const std::string& urdf_string);
 
   //!
   //! \brief registerInterfacesToROSControl
@@ -120,4 +128,4 @@ private:
   //!
   std::vector<boost::shared_ptr<transmission_interface::Transmission>> transmissions_;
 };
-}
+}  // namespace transmission_manager

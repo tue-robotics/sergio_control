@@ -1,6 +1,14 @@
-#include "ethercat_hardware_interface.h"
+//
+// Copyright (c) 2018 TUe Robotics
+//
+// @author Rein Appeldoorn (reinzor)
+//
+
+#include "./ethercat_hardware_interface.h"
 
 #include <ethercat_interface/exceptions.h>
+#include <map>
+#include <string>
 
 namespace ethercat_hardware_interface
 {
@@ -40,7 +48,7 @@ EthercatHardwareInterface::EthercatHardwareInterface(
       throw std::runtime_error(actuator_state->name_ + " could not be found in the ethercat actuators description");
     }
 
-    actuators_.push_back(EthercatActuator(ethercat_actuator->second, ethercat_interface_, actuator_state));
+    actuators_.push_back(EthercatActuator(ethercat_actuator->second, &ethercat_interface_, actuator_state));
   }
 
   // 3. Finally register all interfaces to ROS control
@@ -70,4 +78,4 @@ void EthercatHardwareInterface::write(const ros::Time&, const ros::Duration&)
 
   ethercat_interface_.sendAll();
 }
-}
+}  // namespace ethercat_hardware_interface

@@ -1,3 +1,9 @@
+//
+// Copyright (c) 2018 TUe Robotics
+//
+// @author Rein Appeldoorn (reinzor)
+//
+
 #pragma once
 
 #include <string>
@@ -15,7 +21,7 @@ struct JointState
 
   std::string name_;
 
-  JointState(const std::string& name) : name_(name)
+  explicit JointState(const std::string& name) : name_(name)
   {
   }
 };
@@ -38,7 +44,7 @@ struct ActuatorState
 
   std::string name_;
 
-  ActuatorState(const std::string& name) : name_(name)
+  explicit ActuatorState(const std::string& name) : name_(name)
   {
   }
 };

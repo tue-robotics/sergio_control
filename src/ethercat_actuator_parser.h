@@ -1,7 +1,15 @@
+//
+// Copyright (c) 2018 TUe Robotics
+//
+// @author Rein Appeldoorn (reinzor)
+//
+
 #pragma once
 
 #include <xmlrpcpp/XmlRpc.h>
 #include <ros/console.h>
+#include <map>
+#include <string>
 
 #include "./ethercat_interface_descriptions.h"
 
@@ -13,7 +21,7 @@ namespace ethercat_hardware_interface
 //! \param slave Slave id reference
 //! \param channel Channel id reference
 //!
-inline void getSlaveAndChannel(XmlRpc::XmlRpcValue param, size_t& slave, size_t& channel)
+inline void getSlaveAndChannel(XmlRpc::XmlRpcValue param, size_t* slave, size_t* channel)
 {
   if (param.getType() != XmlRpc::XmlRpcValue::TypeStruct)
   {
@@ -32,8 +40,8 @@ inline void getSlaveAndChannel(XmlRpc::XmlRpcValue param, size_t& slave, size_t&
     throw std::runtime_error("Channel and slave should be of type int");
   }
 
-  slave = static_cast<int>(slave_xmlrpc);
-  channel = static_cast<int>(channel_xmlrpc);
+  *slave = static_cast<int>(slave_xmlrpc);
+  *channel = static_cast<int>(channel_xmlrpc);
 }
 
 //!
@@ -43,8 +51,8 @@ inline void getSlaveAndChannel(XmlRpc::XmlRpcValue param, size_t& slave, size_t&
 //!
 inline EthercatMotorInterfaceDescription getEthercatMotorInterfaceDescription(XmlRpc::XmlRpcValue param)
 {
-  EthercatMotorInterfaceDescription des;
-  getSlaveAndChannel(param, des.slave_, des.channel_);
+  EthercatMotorInterfaceDescription description;
+  getSlaveAndChannel(param, &description.slave_, &description.channel_);
 
   if (!param.hasMember("volt_per_newton_meter"))
   {
@@ -55,9 +63,9 @@ inline EthercatMotorInterfaceDescription getEthercatMotorInterfaceDescription(Xm
   {
     throw std::runtime_error("Volt per newton meter should be a double");
   }
-  des.volt_per_newton_meter_ = static_cast<double>(volt_per_newton_meter_xmlpc);
+  description.volt_per_newton_meter_ = static_cast<double>(volt_per_newton_meter_xmlpc);
 
-  return des;
+  return description;
 }
 
 //!
@@ -67,8 +75,8 @@ inline EthercatMotorInterfaceDescription getEthercatMotorInterfaceDescription(Xm
 //!
 inline EthercatEncoderInterfaceDescription getEthercatEncoderInterfaceDescription(XmlRpc::XmlRpcValue param)
 {
-  EthercatEncoderInterfaceDescription des;
-  getSlaveAndChannel(param, des.slave_, des.channel_);
+  EthercatEncoderInterfaceDescription description;
+  getSlaveAndChannel(param, &description.slave_, &description.channel_);
 
   if (!param.hasMember("encoder_counts_per_revolution"))
   {
@@ -79,9 +87,9 @@ inline EthercatEncoderInterfaceDescription getEthercatEncoderInterfaceDescriptio
   {
     throw std::runtime_error("Volt per newton meter should be a double");
   }
-  des.encoder_counts_per_revolution_ = static_cast<int>(encoder_counts_per_revolution_xmlrpc);
+  description.encoder_counts_per_revolution_ = static_cast<int>(encoder_counts_per_revolution_xmlrpc);
 
-  return des;
+  return description;
 }
 
 //!
@@ -128,4 +136,4 @@ inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDe
 
   return ethercat_actuators_description;
 }
-}
+}  // namespace ethercat_hardware_interface
