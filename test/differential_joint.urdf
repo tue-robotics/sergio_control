@@ -24,17 +24,21 @@
   <transmission name="differential_trans">
     <type>transmission_interface/DifferentialTransmission</type>
     <actuator name="actuator1">
+      <role>actuator1</role>
       <mechanicalReduction>-1.0</mechanicalReduction>
     </actuator>
     <actuator name="actuator2">
+      <role>actuator2</role>
       <mechanicalReduction>1.0</mechanicalReduction>
     </actuator>
     <joint name="joint1">
+      <role>joint1</role>
       <offset>0.0</offset>
       <mechanicalReduction>1.0</mechanicalReduction>
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <joint name="joint2">
+      <role>joint2</role>
       <offset>0.0</offset>
       <mechanicalReduction>-1.0</mechanicalReduction>
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>

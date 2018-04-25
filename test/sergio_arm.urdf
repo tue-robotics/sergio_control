@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<robot name="sergio_arm">
+
+  <!-- <link name="shoulder_mount" /> -->
+
+  <!-- Upper arm -->
+  
+  <!-- <joint name="shoulder_yaw_joint" type="revolute">
+    <origin xyz="0 0 0" rpy="-1.5708 -1.5708 0"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="13.4" velocity="1.0" lower="-1.57" upper="0.0" /> 
+    <parent link="shoulder_mount"/>
+    <child link="shoulder_link1"/>
+  </joint>
+
+  <link name="shoulder_link1" />
+
+  <joint name="shoulder_pitch_joint" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5708  0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit effort="13.4" velocity="1.0" lower="-1.57" upper="1.57" />
+    <parent link="shoulder_link1"/>
+    <child link="shoulder_link2"/>
+  </joint>
+
+  <transmission name="shoulder_yaw_pitch_transmission">
+    <type>transmission_interface/DifferentialTransmission</type>
+    <actuator name="shoulder_yaw_pitch_actuator1">
+      <role>actuator1</role>
+      <mechanicalReduction>-1.0</mechanicalReduction>
+    </actuator>
+    <actuator name="shoulder_yaw_pitch_actuator2">
+      <role>actuator2</role>
+      <mechanicalReduction>1.0</mechanicalReduction>
+    </actuator>
+    <joint name="shoulder_yaw_joint">
+      <role>joint1</role>
+      <offset>0.0</offset>
+      <mechanicalReduction>1.0</mechanicalReduction>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <joint name="shoulder_pitch_joint">
+      <role>joint2</role>
+      <offset>0.0</offset>
+      <mechanicalReduction>-1.0</mechanicalReduction>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission> -->
+
+  <link name="shoulder_link2" />
+
+  <joint name="shoulder_roll_joint" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5708  0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit effort="13.4" velocity="1.0" lower="-1.57" upper="1.57" />
+    <parent link="shoulder_link2"/>
+    <child link="upper_arm"/>
+  </joint>
+
+  <transmission name="shoulder_roll_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="shoulder_roll_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="shoulder_roll_actuator">
+      <mechanicalReduction>33.0625</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link name="upper_arm" />
+
+  <!-- Fore arm -->
+
+<!--   <joint name="elbow_pitch_joint" type="revolute">
+    <origin xyz="0.01 -0.32 0.0" rpy="-1.5708 0 0"/> 
+    <axis xyz="0 -1 0"/>
+    <limit effort="4.5" velocity="1.0" lower="0.0" upper="2.23" />
+    <parent link="upper_arm"/>
+    <child link="elbow_link4"/>
+  </joint>
+
+  <link name="elbow_link4" />
+
+  <joint name="elbow_roll_joint" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="4.5" velocity="1.0" lower="-1.83" upper="1.83"/>
+    <parent link="elbow_link4"/>
+    <child link="fore_arm"/>
+  </joint>
+
+  <transmission name="elbow_pitch_roll_transmission">
+    <type>transmission_interface/DifferentialTransmission</type>
+    <actuator name="elbow_pitch_roll_actuator1">
+      <role>actuator1</role>
+      <mechanicalReduction>-1.0</mechanicalReduction>
+    </actuator>
+    <actuator name="elbow_pitch_roll_actuator2">
+      <role>actuator2</role>
+      <mechanicalReduction>1.0</mechanicalReduction>
+    </actuator>
+    <joint name="elbow_pitch_joint">
+      <role>joint1</role>
+      <offset>0.0</offset>
+      <mechanicalReduction>1.0</mechanicalReduction>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <joint name="elbow_roll_joint">
+      <role>joint2</role>
+      <offset>0.0</offset>
+      <mechanicalReduction>-1.0</mechanicalReduction>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+
+  <link name="fore_arm" /> -->
+
+</robot>

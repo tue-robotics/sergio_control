@@ -54,16 +54,16 @@ inline EthercatMotorInterfaceDescription getEthercatMotorInterfaceDescription(Xm
   EthercatMotorInterfaceDescription description;
   getSlaveAndChannel(param, &description.slave_, &description.channel_);
 
-  if (!param.hasMember("volt_per_newton_meter"))
+  if (!param.hasMember("scale_factor"))
   {
-    throw std::runtime_error("An EthercatMotorInterfaceDescription should have a volt_per_newton_meter key");
+    throw std::runtime_error("An EthercatMotorInterfaceDescription should have a scale_factor key");
   }
-  XmlRpc::XmlRpcValue volt_per_newton_meter_xmlpc = param["volt_per_newton_meter"];
-  if (volt_per_newton_meter_xmlpc.getType() != XmlRpc::XmlRpcValue::TypeDouble)
+  XmlRpc::XmlRpcValue scale_factor_xmlpc = param["scale_factor"];
+  if (scale_factor_xmlpc.getType() != XmlRpc::XmlRpcValue::TypeDouble)
   {
-    throw std::runtime_error("Volt per newton meter should be a double");
+    throw std::runtime_error("Scale factor should be a double");
   }
-  description.volt_per_newton_meter_ = static_cast<double>(volt_per_newton_meter_xmlpc);
+  description.scale_factor_ = static_cast<double>(scale_factor_xmlpc);
 
   return description;
 }

@@ -21,5 +21,5 @@ test_single_joint_position_controller:
       motor:
         slave: 1
         channel: 0
-        volt_per_newton_meter: 6.41 # motor_constant [Nm/A] = 23.4e-3, amplifier_gain [A/V] = 25 / 3.75 => V/Nm = 1 / (motor_constant * amplifier_gain)
+        scale_factor: 6.41 # motor_constant [Nm/A] = 23.4e-3, amplifier_gain [A/V] = 25 / 3.75 => V/Nm = 1 / (motor_constant * amplifier_gain)
   rate: 500

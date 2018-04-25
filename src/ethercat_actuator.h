@@ -34,9 +34,10 @@ public:
 
   bool write()
   {
-    double voltage = state_->command_ * description_.motor_.volt_per_newton_meter_;
-    ROS_DEBUG("Sending %.5f [Nm] %.5f [V] as command to actuator %s", state_->command_, voltage, state_->name_.c_str());
-    return analogue_out_->write(voltage);
+    double output = state_->command_ * description_.motor_.scale_factor_;
+    ROS_DEBUG("Sending %.5f [Nm] that converts to %.5f [Output specific] as command to actuator %s",
+              state_->command_, output, state_->name_.c_str());
+    return analogue_out_->write(output);
   }
 
   void read(const ros::Duration& period)

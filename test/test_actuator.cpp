@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     ethercat_hardware_interface::EthercatActuatorDescription description;
     description.motor_.slave_ = getParam("motor_slave", 1, &local_nh);
     description.motor_.channel_ = getParam("motor_channel", 0, &local_nh);
-    description.motor_.volt_per_newton_meter_ = getParam("motor_volt_per_newton_meter", 22.801652754998294, &local_nh);
+    description.motor_.scale_factor_ = getParam("motor_scale_factor", 22.801652754998294, &local_nh);
     description.encoder_.slave_ = getParam("encoder_slave", 2, &local_nh);
     description.encoder_.channel_ = getParam("encoder_channel", 0, &local_nh);
     description.encoder_.encoder_counts_per_revolution_ = getParam("encoder_counts_per_revolution", 1024, &local_nh);

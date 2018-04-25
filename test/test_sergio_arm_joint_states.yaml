@@ -1,0 +1,55 @@
+# Publish all joint states ----------------------------------
+# Creates the /joint_states topic necessary in ROS
+joint_state_controller:
+   type:         joint_state_controller/JointStateController
+   publish_rate: 50
+
+# Expose the actuator / joint interfaces to ROS control
+test_sergio_arm_joint_states:
+  ethercat_actuators:
+    shoulder_yaw_pitch_actuator1:
+      encoder:
+        slave: 1
+        channel: 1
+        encoder_counts_per_revolution: 2000 # -
+      motor:
+        slave: 1
+        channel: 1
+        scale_factor: 6.41 # -
+    shoulder_yaw_pitch_actuator2:
+      encoder:
+        slave: 1
+        channel: 7
+        encoder_counts_per_revolution: 2000 # -
+      motor:
+        slave: 1
+        channel: 7
+        scale_factor: 6.41 # 
+    shoulder_roll_actuator:
+      encoder:
+        slave: 2
+        channel: 1
+        encoder_counts_per_revolution: 2000 # -
+      motor:
+        slave: 1
+        channel: 1
+        scale_factor: 6.41 # 
+    elbow_pitch_roll_actuator1:
+      encoder:
+        slave: 2
+        channel: 4
+        encoder_counts_per_revolution: 2000 # -
+      motor:
+        slave: 1
+        channel: 4
+        scale_factor: 6.41 # 
+    elbow_pitch_roll_actuator2:
+      encoder:
+        slave: 2
+        channel: 7
+        encoder_counts_per_revolution: 2000 # -
+      motor:
+        slave: 1
+        channel: 0
+        scale_factor: 6.41 # 
+  rate: 500

@@ -20,12 +20,12 @@ struct EthercatInterfaceDescription
 };
 struct EthercatMotorInterfaceDescription : EthercatInterfaceDescription
 {
-  double volt_per_newton_meter_ = 0;  // Voltage to Nm mapping (determined by motor and amp)
+  double scale_factor_ = 0;  // Output to Nm mapping (determined by motor, amplifier or current control)
 };
 inline std::ostream& operator<<(std::ostream& o, const EthercatMotorInterfaceDescription& a)
 {
   o << "EthercatMotorInterfaceDescription(slave=" << a.slave_ << ", channel=" << a.channel_
-    << ", volt_per_newton_meter=" << a.volt_per_newton_meter_ << ")";
+    << ", scale_factor=" << a.scale_factor_ << ")";
   return o;
 }
 

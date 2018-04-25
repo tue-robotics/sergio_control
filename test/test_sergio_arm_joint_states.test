@@ -1,0 +1,12 @@
+<launch>
+    <rosparam file="$(find sergio_control)/test/test_sergio_arm_joint_states.yaml" command="load"/>
+
+	<param name="robot_description" textfile="$(find sergio_control)/test/sergio_arm.urdf" />
+
+	<node name="test_sergio_arm_joint_states" pkg="sergio_control" type="test_ethercat_hardware_interface" output="screen" />
+
+	<!-- Load the default controllers -->
+	<node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" args="joint_state_controller" />
+
+	<!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" /> -->
+</launch>
