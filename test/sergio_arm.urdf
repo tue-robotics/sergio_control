@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <robot name="sergio_arm">
 
-  <!-- <link name="shoulder_mount" /> -->
+  <link name="shoulder_mount" />
 
   <!-- Upper arm -->
   
-  <!-- <joint name="shoulder_yaw_joint" type="revolute">
+  <joint name="shoulder_yaw_joint" type="revolute">
     <origin xyz="0 0 0" rpy="-1.5708 -1.5708 0"/>
     <axis xyz="1 0 0"/>
     <limit effort="13.4" velocity="1.0" lower="-1.57" upper="0.0" /> 
@@ -45,7 +45,7 @@
       <mechanicalReduction>-1.0</mechanicalReduction>
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-  </transmission> -->
+  </transmission>
 
   <link name="shoulder_link2" />
 
@@ -71,7 +71,7 @@
 
   <!-- Fore arm -->
 
-<!--   <joint name="elbow_pitch_joint" type="revolute">
+  <joint name="elbow_pitch_joint" type="revolute">
     <origin xyz="0.01 -0.32 0.0" rpy="-1.5708 0 0"/> 
     <axis xyz="0 -1 0"/>
     <limit effort="4.5" velocity="1.0" lower="0.0" upper="2.23" />
@@ -113,6 +113,6 @@
     </joint>
   </transmission>
 
-  <link name="fore_arm" /> -->
+  <link name="fore_arm" />
 
 </robot>
