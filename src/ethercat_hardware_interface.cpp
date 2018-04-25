@@ -12,9 +12,8 @@
 
 namespace ethercat_hardware_interface
 {
-EthercatHardwareInterface::EthercatHardwareInterface(
-    const std::string& interface_name, const std::string& urdf_string,
-    const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description,
+EthercatHardwareInterface::EthercatHardwareInterface(const std::string& interface_name, const std::string& urdf_string,
+    const EthercatActuatorDescriptionMap& ethercat_actuators_description,
     const std::string& package_name, const std::string& executable_name) :
   transmission_manager_(urdf_string)
 {
@@ -37,7 +36,7 @@ EthercatHardwareInterface::EthercatHardwareInterface(
     ROS_INFO("Getting actuator %s from ethercat actuators description ...", actuator_state->name_.c_str());
 
     // Lookup the actuator in the ethercat actuators description
-    std::map<std::string, EthercatActuatorDescription>::const_iterator ethercat_actuator =
+    std::map<std::string, EthercatMotorEncoderDescription>::const_iterator ethercat_actuator =
         ethercat_actuators_description.find(actuator_state->name_);
 
     if (ethercat_actuator == ethercat_actuators_description.end())

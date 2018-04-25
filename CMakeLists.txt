@@ -30,6 +30,11 @@ target_link_libraries(ethercat_hardware_interface
   ${catkin_LIBRARIES}
 )
 
+# Sergio
+
+add_executable(sergio_hardware_interface_node src/sergio_hardware_interface_node.cpp src/sergio_hardware_interface.cpp)
+target_link_libraries(sergio_hardware_interface_node ethercat_hardware_interface)
+
 # Test
 add_executable(test_transmission_manager test/test_transmission_manager.cpp)
 target_link_libraries(test_transmission_manager transmission_manager)
