@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <ethercat_interface/ethercat_interface.h>
+#include <ethercat_interface/interface.h>
 
 namespace ethercat_hardware_interface
 {

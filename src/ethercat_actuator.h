@@ -16,7 +16,7 @@ namespace ethercat_hardware_interface
 class EthercatActuator
 {
 public:
-  EthercatActuator(const EthercatActuatorDescription& description, EthercatInterface* interface,
+  EthercatActuator(const EthercatActuatorDescription& description, ethercat_interface::InterfacePtr interface,
                    std::shared_ptr<ActuatorState> state)
     : state_(state), description_(description)
   {
@@ -53,7 +53,7 @@ public:
   }
 
 private:
-  std::shared_ptr<WriteInterface> analogue_out_;
-  std::shared_ptr<ReadInterface> encoder_in_;
+  ethercat_interface::OutputPtr analogue_out_;
+  ethercat_interface::InputPtr encoder_in_;
 };
 }  // namespace ethercat_hardware_interface

@@ -13,22 +13,19 @@
 namespace ethercat_hardware_interface
 {
 EthercatHardwareInterface::EthercatHardwareInterface(
-    const std::string& ethernet_interface, const std::string& urdf_string,
+    const std::string& interface_name, const std::string& urdf_string,
     const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description,
-    const std::string& package_name, const std::string& executable_name)
-  : transmission_manager_(urdf_string)
+    const std::string& package_name, const std::string& executable_name) :
+  transmission_manager_(urdf_string)
 {
   // 1. Connect to the ethercat interface
   try
   {
-    if (!ethercat_interface_.initialize(ethernet_interface))
-    {
-      throw std::runtime_error("Failed to initialize ethercat interface on ethernet interface " + ethernet_interface);
-    }
+    interface_ = ethercat_interface::InterfacePtr(new ethercat_interface::Interface(interface_name));
   }
-  catch (SocketError)
+  catch (ethercat_interface::SocketException)
   {
-    throw std::runtime_error("No socket connection on " + ethernet_interface + ". Try excecuting the following "
+    throw std::runtime_error("No socket connection on " + interface_name + ". Try excecuting the following "
                                                                                "command: sudo setcap cap_net_raw+ep "
                                                                                "$(readlink $(catkin_find " +
                              package_name + " " + executable_name + "))\n");
@@ -48,7 +45,7 @@ EthercatHardwareInterface::EthercatHardwareInterface(
       throw std::runtime_error(actuator_state->name_ + " could not be found in the ethercat actuators description");
     }
 
-    actuators_.push_back(EthercatActuator(ethercat_actuator->second, &ethercat_interface_, actuator_state));
+    actuators_.push_back(EthercatActuator(ethercat_actuator->second, interface_, actuator_state));
   }
 
   // 3. Finally register all interfaces to ROS control
@@ -57,7 +54,7 @@ EthercatHardwareInterface::EthercatHardwareInterface(
 
 void EthercatHardwareInterface::read(const ros::Time&, const ros::Duration& period)
 {
-  ethercat_interface_.receiveAll();
+  interface_->read();
 
   for (EthercatActuator& actuator : actuators_)
   {
@@ -76,6 +73,6 @@ void EthercatHardwareInterface::write(const ros::Time&, const ros::Duration&)
     actuator.write();
   }
 
-  ethercat_interface_.sendAll();
+  interface_->write();
 }
 }  // namespace ethercat_hardware_interface
