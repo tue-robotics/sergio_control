@@ -9,7 +9,7 @@
 #include "../src/ethercat_actuator_parser.h"
 #include "../src/transmission_manager.h"
 
-void setActuatorStatesPosition(std::vector<std::shared_ptr<ActuatorState>> states, double position, double velocity,
+void setActuatorStatesPosition(std::vector<ActuatorStatePtr> states, double position, double velocity,
                                double effort)
 {
   ROS_INFO("Setting actuator states position=%.2f, velocity=%.3f, effort=%.2f", position, velocity, effort);
@@ -21,7 +21,7 @@ void setActuatorStatesPosition(std::vector<std::shared_ptr<ActuatorState>> state
   }
 }
 
-void setJointStatesCommand(std::vector<std::shared_ptr<JointState>> states, double command)
+void setJointStatesCommand(std::vector<JointStatePtr> states, double command)
 {
   ROS_INFO("Setting joint states command to %.2f", command);
   for (auto state : states)
@@ -30,8 +30,7 @@ void setJointStatesCommand(std::vector<std::shared_ptr<JointState>> states, doub
   }
 }
 
-void printState(std::vector<std::shared_ptr<JointState>> joint_states,
-                std::vector<std::shared_ptr<ActuatorState>> actuator_states)
+void printState(std::vector<JointStatePtr> joint_states, std::vector<ActuatorStatePtr> actuator_states)
 {
   ROS_INFO("-------");
   for (auto joint_state : joint_states)
@@ -48,6 +47,12 @@ void printState(std::vector<std::shared_ptr<JointState>> joint_states,
 int main(int argc, char* argv[])
 {
   ros::init(argc, argv, "test_transmission_manager");
+
+  // Configure logging
+  if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
+  {
+    ros::console::notifyLoggerLevelsChanged();
+  }
 
   ros::NodeHandle local_nh("~");
   std::string urdf_string = local_nh.param("/robot_description", std::string(""));
