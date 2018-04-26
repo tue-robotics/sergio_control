@@ -56,6 +56,18 @@ TransmissionManager::TransmissionManager(const std::string& urdf_string)
                          transmission_info.joints_);
   }
 
+  ROS_DEBUG("Transmission manager joint states:");
+  for (auto joint_state : getJointStates())
+  {
+    ROS_DEBUG_STREAM("- " << *joint_state);
+  }
+
+  ROS_DEBUG("Transmission manager actuator states:");
+  for (auto actuator : getActuatorStates())
+  {
+    ROS_DEBUG_STREAM("- " << *actuator);
+  }
+
   ROS_INFO("TransmissionManager initialized %d transmissions", (int)transmission_infos.size());
 }
 
@@ -103,6 +115,7 @@ void TransmissionManager::registerTransmission(
   {
     // Create a new actuator
     JointStatePtr joint_state(new JointState(joint_info.name_));
+    joint_states_[joint_info.name_] = joint_state;
 
     // Expose the joint state
     hardware_interface::JointStateHandle joint_state_handle(joint_state->name_, &joint_state->calibrated_position_,
