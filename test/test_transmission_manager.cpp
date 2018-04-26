@@ -6,7 +6,7 @@
 
 #include <ros/ros.h>
 
-#include "../src/ethercat_actuator_parser.h"
+#include "../src/ethercat_interface_parser.h"
 #include "../src/transmission_manager.h"
 
 void setActuatorStatesPosition(std::vector<ActuatorStatePtr> states, double position, double velocity,
@@ -57,7 +57,8 @@ int main(int argc, char* argv[])
   ros::NodeHandle local_nh("~");
   std::string urdf_string = local_nh.param("/robot_description", std::string(""));
 
-  transmission_manager::TransmissionManager transmission_manager(urdf_string);
+  ROSControlInterfaces ros_control_interfaces;
+  transmission_manager::TransmissionManager transmission_manager(urdf_string, &ros_control_interfaces);
 
   // First check if we can propagate the command on the joint to the command of the actuator
   setJointStatesCommand(transmission_manager.getJointStates(), 0.1);

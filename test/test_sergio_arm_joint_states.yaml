@@ -6,7 +6,7 @@ joint_state_controller:
 
 # Expose the actuator / joint interfaces to ROS control
 test_sergio_arm_joint_states:
-  ethercat_actuators:
+  ethercat_actuator_interfaces:
     shoulder_yaw_pitch_actuator1:
       encoder:
         slave: 1
@@ -52,4 +52,30 @@ test_sergio_arm_joint_states:
         slave: 1
         channel: 0
         scale_factor: 6.41 # 
+  ethercat_absolute_joint_position_interfaces:
+    shoulder_pitch_joint:
+      slave: 1
+      channel: 23
+      scale_factor: 1.0
+      offset: 0.0
+    shoulder_yaw_joint:
+      slave: 1
+      channel: 25
+      scale_factor: 1.0
+      offset: 0.0
+    shoulder_roll_joint:
+      slave: 2
+      channel: 23
+      scale_factor: 1.0
+      offset: 0.0
+    elbow_pitch_joint:
+      slave: 2
+      channel: 24
+      scale_factor: 1.0
+      offset: 0.0
+    elbow_roll_joint:
+      slave: 2
+      channel: 25
+      scale_factor: 1.0
+      offset: 0.0
   rate: 500

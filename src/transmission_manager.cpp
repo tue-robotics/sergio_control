@@ -15,7 +15,9 @@
 
 namespace transmission_manager
 {
-TransmissionManager::TransmissionManager(const std::string& urdf_string)
+TransmissionManager::TransmissionManager(const std::string& urdf_string,
+                                         ROSControlInterfaces* ros_control_interfaces) :
+  ros_control_interfaces_(ros_control_interfaces)
 {
   // 2. Parse the urdf and register all transmissions
   transmission_interface::TransmissionParser parser;
@@ -76,8 +78,8 @@ void TransmissionManager::registerTransmission(
     std::vector<transmission_interface::ActuatorInfo> transmission_actuator_infos,
     std::vector<transmission_interface::JointInfo> transmission_joint_infos)
 {
-  ROS_INFO("Registering transmission '%s' with %d actuators and %d joints", transmission_name.c_str(),
-           (int)transmission->numActuators(), (int)transmission->numJoints());
+  ROS_INFO("Registering transmission '%s' with %zu actuators and %zu joints", transmission_name.c_str(),
+           transmission->numActuators(), transmission->numJoints());
 
   // Register all actuators
   transmission_interface::ActuatorData actuator_data;
@@ -92,10 +94,10 @@ void TransmissionManager::registerTransmission(
     // Expose the actuator state
     hardware_interface::ActuatorStateHandle actuator_state_handle(actuator_state->name_, &actuator_state->position_,
                                                                   &actuator_state->velocity_, &actuator_state->effort_);
-    actuator_state_interface_.registerHandle(actuator_state_handle);
+    ros_control_interfaces_->actuator_state_interface_.registerHandle(actuator_state_handle);
 
     // Expose the actuator command interface
-    actuator_effort_interface_.registerHandle(
+    ros_control_interfaces_->actuator_effort_interface_.registerHandle(
         hardware_interface::ActuatorHandle(actuator_state_handle, &actuator_state->command_));
 
     // Required for transmission interface
@@ -120,10 +122,11 @@ void TransmissionManager::registerTransmission(
     // Expose the joint state
     hardware_interface::JointStateHandle joint_state_handle(joint_state->name_, &joint_state->calibrated_position_,
                                                             &joint_state->velocity_, &joint_state->effort_);
-    joint_state_interface_.registerHandle(joint_state_handle);
+    ros_control_interfaces_->joint_state_interface_.registerHandle(joint_state_handle);
 
     // Expose the joint command interface
-    joint_effort_interface_.registerHandle(hardware_interface::JointHandle(joint_state_handle, &joint_state->command_));
+    ros_control_interfaces_->joint_effort_interface_.registerHandle(
+          hardware_interface::JointHandle(joint_state_handle, &joint_state->command_));
 
     // Required for transmission interface
     joint_data.position.push_back(&joint_state->raw_position_);  // Note that we pass the raw position here
@@ -137,38 +140,21 @@ void TransmissionManager::registerTransmission(
   transmissions_.push_back(transmission);
 
   // Register transmissions
-  actuator_to_joint_position_transmission_interface_.registerHandle(
+  ros_control_interfaces_->actuator_to_joint_position_transmission_interface_.registerHandle(
       transmission_interface::ActuatorToJointPositionHandle(transmission_name, transmission.get(), actuator_data,
                                                             joint_data));
-  actuator_to_joint_velocity_transmission_interface_.registerHandle(
+  ros_control_interfaces_->actuator_to_joint_velocity_transmission_interface_.registerHandle(
       transmission_interface::ActuatorToJointVelocityHandle(transmission_name, transmission.get(), actuator_data,
                                                             joint_data));
-  actuator_to_joint_effort_transmission_interface_.registerHandle(transmission_interface::ActuatorToJointEffortHandle(
-      transmission_name, transmission.get(), actuator_data, joint_data));
+  ros_control_interfaces_->actuator_to_joint_effort_transmission_interface_.registerHandle(
+        transmission_interface::ActuatorToJointEffortHandle(transmission_name, transmission.get(),
+                                                            actuator_data, joint_data));
   ROS_INFO("Registered actuator to joint position transmission interface '%s'", transmission_name.c_str());
 
-  joint_to_actuator_effort_transmission_interface_.registerHandle(transmission_interface::JointToActuatorEffortHandle(
-      transmission_name, transmission.get(), actuator_command_data, joint_command_data));
+  ros_control_interfaces_->joint_to_actuator_effort_transmission_interface_.registerHandle(
+        transmission_interface::JointToActuatorEffortHandle(transmission_name, transmission.get(),
+                                                            actuator_command_data, joint_command_data));
   ROS_INFO("Registered joint to actuator effort transmission interface '%s'", transmission_name.c_str());
-}
-
-void TransmissionManager::registerInterfacesToROSControl(hardware_interface::InterfaceManager* interface_manager)
-{
-  // Register the actuator interfaces for actuator state (output) and actuator effort (input)
-  interface_manager->registerInterface(&actuator_state_interface_);
-  interface_manager->registerInterface(&actuator_effort_interface_);
-
-  // Register joint interfaces for the joint state (output) and joint effort (input)
-  interface_manager->registerInterface(&joint_state_interface_);
-  interface_manager->registerInterface(&joint_effort_interface_);
-
-  // Register transmission interfaces for actuators to joints
-  interface_manager->registerInterface(&actuator_to_joint_position_transmission_interface_);
-  interface_manager->registerInterface(&actuator_to_joint_velocity_transmission_interface_);
-  interface_manager->registerInterface(&actuator_to_joint_effort_transmission_interface_);
-
-  // Register transmission interfaces for joints to actuators
-  interface_manager->registerInterface(&joint_to_actuator_effort_transmission_interface_);
 }
 
 void TransmissionManager::calibrateJointPosition(const std::string& joint_name, double real_joint_position)
@@ -187,9 +173,9 @@ void TransmissionManager::calibrateJointPosition(const std::string& joint_name, 
 void TransmissionManager::propagateAcuatorStatesToJointStates()
 {
   // We read the state of the actuator and we need to propagate this to the corresponding joints
-  actuator_to_joint_position_transmission_interface_.propagate();
-  actuator_to_joint_velocity_transmission_interface_.propagate();
-  actuator_to_joint_effort_transmission_interface_.propagate();
+  ros_control_interfaces_->actuator_to_joint_position_transmission_interface_.propagate();
+  ros_control_interfaces_->actuator_to_joint_velocity_transmission_interface_.propagate();
+  ros_control_interfaces_->actuator_to_joint_effort_transmission_interface_.propagate();
 
   // Now propogate the joint offsets
   for (auto joint_state : getJointStates())
@@ -202,7 +188,7 @@ void TransmissionManager::propagateJointStatesToActuatorStates()
 {
   // We control the joint position and the controller outputs an effort for the joint, this transmission makes sure
   // that we propagate this joint effort to the corresponding actuators
-  joint_to_actuator_effort_transmission_interface_.propagate();
+  ros_control_interfaces_->joint_to_actuator_effort_transmission_interface_.propagate();
 }
 
 //!

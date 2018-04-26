@@ -40,14 +40,27 @@ inline std::ostream& operator<<(std::ostream& o, const EthercatEncoderInterfaceD
   return o;
 }
 
-struct EthercatActuatorDescription
+struct EthercatActuatorInterfaceDescription
 {
   EthercatMotorInterfaceDescription motor_;
   EthercatEncoderInterfaceDescription encoder_;
 };
-inline std::ostream& operator<<(std::ostream& o, const EthercatActuatorDescription& a)
+inline std::ostream& operator<<(std::ostream& o, const EthercatActuatorInterfaceDescription& a)
 {
-  o << "EthercatActuatorDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ")";
+  o << "EthercatActuatorInterfaceDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ")";
   return o;
 }
+
+struct EthercatJointPositionInterfaceDescription : EthercatInterfaceDescription
+{
+  double offset_ = 0;  // Offset at zero
+  double scale_factor_ = 0;  // Scale factor from measurement to SI [radians or m]
+};
+inline std::ostream& operator<<(std::ostream& o, const EthercatJointPositionInterfaceDescription& a)
+{
+  o << "EthercatJointPositionInterfaceDescription(slave=" << a.slave_ << ", channel=" << a.channel_
+    << ", scale_factor=" << a.scale_factor_ << ", offset=" << a.offset_ << ")";
+  return o;
+}
+
 }  // namespace ethercat_hardware_interface

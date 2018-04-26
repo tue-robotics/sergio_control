@@ -16,7 +16,7 @@ namespace ethercat_hardware_interface
 class EthercatActuator
 {
 public:
-  EthercatActuator(const EthercatActuatorDescription& description, ethercat_interface::InterfacePtr interface,
+  EthercatActuator(const EthercatActuatorInterfaceDescription& description, ethercat_interface::InterfacePtr interface,
                    std::shared_ptr<ActuatorState> state)
     : state_(state), description_(description)
   {
@@ -29,8 +29,8 @@ public:
     ROS_INFO("Actuator initialized");
   }
 
-  std::shared_ptr<ActuatorState> state_;
-  EthercatActuatorDescription description_;
+  ActuatorStatePtr state_;
+  EthercatActuatorInterfaceDescription description_;
 
   bool write()
   {
@@ -60,4 +60,32 @@ private:
   ethercat_interface::OutputPtr analogue_out_;
   ethercat_interface::InputPtr encoder_in_;
 };
+
+class EthercatJointPositionInterface
+{
+public:
+  EthercatJointPositionInterface(const EthercatJointPositionInterfaceDescription& description,
+                                 ethercat_interface::InterfacePtr interface, std::shared_ptr<JointState> state)
+    : description_(description), state_(state)
+  {
+    ROS_INFO("Registering position in interface on slave %zu and channel %zu ...",
+             description.slave_, description.channel_);
+    position_in_ = interface->getSlave(description.slave_).getInput(description.channel_);
+    ROS_INFO("EthercatJointPositionInterface initialized");
+  }
+
+  void read()
+  {
+    double value = position_in_->read();
+    state_->calibrated_position_ = value * description_.scale_factor_ + description_.offset_;
+    ROS_DEBUG("Read raw value: %.4f, joint position value: %.4f", value, state_->calibrated_position_);
+  }
+
+  EthercatJointPositionInterfaceDescription description_;
+  JointStatePtr state_;
+
+private:
+  ethercat_interface::InputPtr position_in_;
+};
+
 }  // namespace ethercat_hardware_interface

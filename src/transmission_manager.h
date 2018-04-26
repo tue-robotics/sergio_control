@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "./ros_control_interfaces.h"
+
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/actuator_command_interface.h>
 #include <hardware_interface/actuator_state_interface.h>
@@ -27,13 +29,8 @@ public:
   //! \brief TransmissionManager
   //! \param urdf_string
   //!
-  explicit TransmissionManager(const std::string& urdf_string);
-
-  //!
-  //! \brief registerInterfacesToROSControl
-  //! \param interface_manager
-  //!
-  void registerInterfacesToROSControl(hardware_interface::InterfaceManager* interface_manager);
+  explicit TransmissionManager(const std::string& urdf_string,
+                               ROSControlInterfaces* ros_control_interfaces);
 
   //!
   //! \brief calibrateJointPosition Calibrates the joint position to the passed value
@@ -65,6 +62,16 @@ public:
   //!
   std::vector<JointStatePtr> getJointStates();
 
+  //!
+  //! \brief actuator_states_ State and commands of all ethercat actuators
+  //!
+  std::map<std::string, ActuatorStatePtr> actuator_states_;
+
+  //!
+  //! \brief joint_states_ State and commands of all registered joints
+  //!
+  std::map<std::string, JointStatePtr> joint_states_;
+
 private:
   //!
   //! \brief registerTransmission Register a transmission for joint, actuator combinations
@@ -94,58 +101,13 @@ private:
                             std::vector<transmission_interface::JointInfo> transmission_joint_infos);
 
   //!
-  //! \brief actuator_state_interface_ Exposes the actuator interface to ROS Control
+  //! \brief ros_control_interfaces_ Interfaces to ROS control
   //!
-  hardware_interface::ActuatorStateInterface actuator_state_interface_;
-
-  //!
-  //! \brief actuator_command_interface_ Exposes an actuator interface to ROS control
-  //!
-  hardware_interface::EffortActuatorInterface actuator_effort_interface_;
-
-  //!
-  //! \brief joint_state_interface_ Exposes the joint interface to ROS Control
-  //!
-  hardware_interface::JointStateInterface joint_state_interface_;
-
-  //!
-  //! \brief joint_effort_interface_ Exposes the joint effort interface to ROS control
-  //!
-  hardware_interface::EffortJointInterface joint_effort_interface_;
-
-  //!
-  //! \brief actuator_to_joint_transmission_interface_ Actuator radians to joint radians
-  //!
-  transmission_interface::ActuatorToJointPositionInterface actuator_to_joint_position_transmission_interface_;
-
-  //!
-  //! \brief actuator_to_joint_velocity_transmission_interface_ Actuator radians / sec to joint radians / sec
-  //!
-  transmission_interface::ActuatorToJointVelocityInterface actuator_to_joint_velocity_transmission_interface_;
-
-  //!
-  //! \brief actuator_to_joint_effort_transmission_interface_ Actuator effort nm to joints effort nm
-  //!
-  transmission_interface::ActuatorToJointEffortInterface actuator_to_joint_effort_transmission_interface_;
-
-  //!
-  //! \brief joint_to_actuator_transmission_interface_ Joint efforts to actuator efforts
-  //!
-  transmission_interface::JointToActuatorEffortInterface joint_to_actuator_effort_transmission_interface_;
+  ROSControlInterfaces* ros_control_interfaces_;
 
   //!
   //! \brief transmissions_ All transmissions obtained via the URDF
   //!
   std::vector<boost::shared_ptr<transmission_interface::Transmission>> transmissions_;
-
-  //!
-  //! \brief actuator_states_ State and commands of all ethercat actuators
-  //!
-  std::map<std::string, ActuatorStatePtr> actuator_states_;
-
-  //!
-  //! \brief joint_states_ State and commands of all registered joints
-  //!
-  std::map<std::string, JointStatePtr> joint_states_;
 };
 }  // namespace transmission_manager

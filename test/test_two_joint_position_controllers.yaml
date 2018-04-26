@@ -16,7 +16,7 @@ joint2_position_controller:
    pid: {p: 2.0, i: 0.0, d: 0.06}
 
 test_single_joint_position_controller:
-  ethercat_actuators:
+  ethercat_actuator_interfaces:
     actuator1:
       encoder:
         slave: 2

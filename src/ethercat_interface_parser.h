@@ -85,9 +85,39 @@ inline EthercatEncoderInterfaceDescription getEthercatEncoderInterfaceDescriptio
   XmlRpc::XmlRpcValue encoder_counts_per_revolution_xmlrpc = param["encoder_counts_per_revolution"];
   if (encoder_counts_per_revolution_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeInt)
   {
-    throw std::runtime_error("Volt per newton meter should be a double");
+    throw std::runtime_error("encoder_counts_per_revolution should be a int");
   }
   description.encoder_counts_per_revolution_ = static_cast<int>(encoder_counts_per_revolution_xmlrpc);
+
+  return description;
+}
+
+inline EthercatJointPositionInterfaceDescription getEthercatJointPositionInterfaceDescription(XmlRpc::XmlRpcValue param)
+{
+  EthercatJointPositionInterfaceDescription description;
+  getSlaveAndChannel(param, &description.slave_, &description.channel_);
+
+  if (!param.hasMember("scale_factor"))
+  {
+    throw std::runtime_error("An EthercatJointPositionInterfaceDescription should have a scale_factor key");
+  }
+  XmlRpc::XmlRpcValue scale_factor_xmlrpc = param["scale_factor"];
+  if (scale_factor_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeDouble)
+  {
+    throw std::runtime_error("scale_factor should be a double");
+  }
+  description.scale_factor_ = static_cast<double>(scale_factor_xmlrpc);
+
+  if (!param.hasMember("offset"))
+  {
+    throw std::runtime_error("An EthercatJointPositionInterfaceDescription should have a offset key");
+  }
+  XmlRpc::XmlRpcValue offset_xmlrpc = param["offset"];
+  if (scale_factor_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeDouble)
+  {
+    throw std::runtime_error("offset should be a double");
+  }
+  description.offset_ = static_cast<double>(offset_xmlrpc);
 
   return description;
 }
@@ -97,9 +127,9 @@ inline EthercatEncoderInterfaceDescription getEthercatEncoderInterfaceDescriptio
 //! \param param The XML RPC parameter
 //! \return Return a map from actuator names to descriptions
 //!
-inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDescription(XmlRpc::XmlRpcValue param)
+inline std::map<std::string, EthercatActuatorInterfaceDescription> getEthercatActuatorInterfacesDescription(XmlRpc::XmlRpcValue param)
 {
-  std::map<std::string, EthercatActuatorDescription> ethercat_actuators_description;
+  std::map<std::string, EthercatActuatorInterfaceDescription> ethercat_actuators_description;
   for (XmlRpc::XmlRpcValue::ValueStruct::const_iterator act_it = param.begin(); act_it != param.end(); ++act_it)
   {
     XmlRpc::XmlRpcValue actuator_name_xmlrpc = act_it->first;
@@ -121,7 +151,7 @@ inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDe
       throw std::runtime_error("An actuator should have a motor and encoder key");
     }
 
-    EthercatActuatorDescription description;
+    EthercatActuatorInterfaceDescription description;
     description.encoder_ = getEthercatEncoderInterfaceDescription(actuator_description_xmlrpc["encoder"]);
     description.motor_ = getEthercatMotorInterfaceDescription(actuator_description_xmlrpc["motor"]);
     ethercat_actuators_description[actuator_name] = description;
@@ -131,9 +161,41 @@ inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDe
 
   if (ethercat_actuators_description.empty())
   {
-    throw std::runtime_error("No ethercat actuators found");
+    ROS_WARN("No ethercat actuators found");
   }
 
   return ethercat_actuators_description;
 }
+
+inline std::map<std::string, EthercatJointPositionInterfaceDescription> getEthercatJointPositionInterfacesDescription(XmlRpc::XmlRpcValue param)
+{
+  std::map<std::string, EthercatJointPositionInterfaceDescription> ethercat_joint_position_interfaces;
+  for (XmlRpc::XmlRpcValue::ValueStruct::const_iterator act_it = param.begin(); act_it != param.end(); ++act_it)
+  {
+    XmlRpc::XmlRpcValue joint_name_xmlrpc = act_it->first;
+    XmlRpc::XmlRpcValue joint_position_interface_xmlrpc = act_it->second;
+    if (joint_name_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeString)
+    {
+      throw std::runtime_error("Key should be of type string");
+    }
+    if (joint_position_interface_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeStruct)
+    {
+      throw std::runtime_error("Value should be of type struct");
+    }
+    std::string joint_name = static_cast<std::string>(joint_name_xmlrpc);
+    ROS_DEBUG("Parsing joint name %s", joint_name.c_str());
+
+    ethercat_joint_position_interfaces[joint_name] = getEthercatJointPositionInterfaceDescription(joint_position_interface_xmlrpc);
+
+    ROS_INFO_STREAM("Parsed " << joint_name << ": " <<  ethercat_joint_position_interfaces[joint_name]);
+  }
+
+  if (ethercat_joint_position_interfaces.empty())
+  {
+    throw std::runtime_error("No ethercat_joint_position_interfaces found");
+  }
+
+  return ethercat_joint_position_interfaces;
+}
+
 }  // namespace ethercat_hardware_interface
