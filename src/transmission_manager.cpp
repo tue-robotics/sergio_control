@@ -10,6 +10,7 @@
 #include <transmission_interface/transmission_loader.h>
 #include <transmission_interface/simple_transmission_loader.h>
 #include <transmission_interface/differential_transmission_loader.h>
+#include <joint_limits_interface/joint_limits_urdf.h>
 #include <string>
 #include <vector>
 
@@ -19,10 +20,12 @@ TransmissionManager::TransmissionManager(const std::string& urdf_string,
                                          ROSControlInterfaces* ros_control_interfaces) :
   ros_control_interfaces_(ros_control_interfaces)
 {
-  // 2. Parse the urdf and register all transmissions
+  urdf::Model urdf_model;
+
+  // Parse the urdf and register all transmissions
   transmission_interface::TransmissionParser parser;
   std::vector<transmission_interface::TransmissionInfo> transmission_infos;
-  if (!parser.parse(urdf_string, transmission_infos))
+  if (!parser.parse(urdf_string, transmission_infos) || !urdf_model.initString(urdf_string))
   {
     throw std::runtime_error("Failed to parse urdf file! " + urdf_string);
   }
@@ -55,7 +58,7 @@ TransmissionManager::TransmissionManager(const std::string& urdf_string,
     }
 
     registerTransmission(transmission_info.name_, transmission, transmission_info.actuators_,
-                         transmission_info.joints_);
+                         transmission_info.joints_, urdf_model);
   }
 
   ROS_DEBUG("Transmission manager joint states:");
@@ -70,13 +73,14 @@ TransmissionManager::TransmissionManager(const std::string& urdf_string,
     ROS_DEBUG_STREAM("- " << *actuator);
   }
 
-  ROS_INFO("TransmissionManager initialized %d transmissions", (int)transmission_infos.size());
+  ROS_INFO("TransmissionManager initialized %zu transmissions", transmission_infos.size());
 }
 
 void TransmissionManager::registerTransmission(
     std::string transmission_name, boost::shared_ptr<transmission_interface::Transmission> transmission,
     std::vector<transmission_interface::ActuatorInfo> transmission_actuator_infos,
-    std::vector<transmission_interface::JointInfo> transmission_joint_infos)
+    std::vector<transmission_interface::JointInfo> transmission_joint_infos,
+    const urdf::Model& urdf_model)
 {
   ROS_INFO("Registering transmission '%s' with %zu actuators and %zu joints", transmission_name.c_str(),
            transmission->numActuators(), transmission->numJoints());
@@ -125,14 +129,30 @@ void TransmissionManager::registerTransmission(
     ros_control_interfaces_->joint_state_interface_.registerHandle(joint_state_handle);
 
     // Expose the joint command interface
-    ros_control_interfaces_->joint_effort_interface_.registerHandle(
-          hardware_interface::JointHandle(joint_state_handle, &joint_state->command_));
+    hardware_interface::JointHandle joint_handle(joint_state_handle, &joint_state->command_);
+    ros_control_interfaces_->joint_effort_interface_.registerHandle(joint_handle);
 
     // Required for transmission interface
     joint_data.position.push_back(&joint_state->raw_position_);  // Note that we pass the raw position here
     joint_data.velocity.push_back(&joint_state->velocity_);
     joint_data.effort.push_back(&joint_state->effort_);
     joint_command_data.effort.push_back(&joint_state->command_);
+
+    //! Handle joints limits!
+    joint_limits_interface::JointLimits limits;
+    if (!joint_limits_interface::getJointLimits(urdf_model.getJoint(joint_info.name_), limits))
+    {
+      throw std::runtime_error("Failed to load limits for joint: " + joint_info.name_);
+    }
+    joint_limits_interface::SoftJointLimits soft_limits;
+    if (!joint_limits_interface::getSoftJointLimits(urdf_model.getJoint(joint_info.name_), soft_limits))
+    {
+      throw std::runtime_error("Failed to load soft limits for joint: " + joint_info.name_);
+    }
+    ros_control_interfaces_->effort_joint_saturation_joint_limits_interface_.registerHandle(
+          joint_limits_interface::EffortJointSaturationHandle(joint_handle, limits));
+    ros_control_interfaces_->effort_joint_soft_limits_joint_limits_interface_.registerHandle(
+          joint_limits_interface::EffortJointSoftLimitsHandle(joint_handle, limits, soft_limits));
 
     ROS_INFO("Registered state and command interface for joint '%s'", joint_info.name_.c_str());
   }

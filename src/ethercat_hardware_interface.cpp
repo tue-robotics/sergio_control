@@ -88,6 +88,10 @@ EthercatHardwareInterface::EthercatHardwareInterface(const std::string& interfac
   // Register transmission interfaces for joints to actuators
   registerInterface(&ros_control_interfaces_.joint_to_actuator_effort_transmission_interface_);
 
+  // Register the joints limit interfaces
+  registerInterface(&ros_control_interfaces_.effort_joint_saturation_joint_limits_interface_);
+  registerInterface(&ros_control_interfaces_.effort_joint_soft_limits_joint_limits_interface_);
+
   //  Null all joints in the transmission manager
   read(ros::Time::now(), ros::Duration());
   std::map<std::string, double> initial_calibration_data;

@@ -10,6 +10,8 @@
 #include <ostream>
 #include <memory>
 
+#include <joint_limits_interface/joint_limits.h>
+
 struct JointState
 {
   // state

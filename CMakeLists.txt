@@ -10,9 +10,11 @@ find_package(catkin REQUIRED COMPONENTS
   diagnostic_updater
   ethercat_interface
   hardware_interface
+  joint_limits_interface
   realtime_tools
   roscpp
   transmission_interface
+  urdf
 )
 
 catkin_package()
