@@ -8,11 +8,14 @@
 
 #include <string>
 #include <ostream>
+#include <memory>
 
 struct JointState
 {
   // state
-  double position_ = 0;
+  double raw_position_ = 0;
+  double position_offset_ = 0;    // calibration
+  double calibrated_position_ = 0;
   double velocity_ = 0;
   double effort_ = 0;
 
@@ -27,10 +30,12 @@ struct JointState
 };
 inline std::ostream& operator<<(std::ostream& o, const JointState& s)
 {
-  o << "JointState(name=" << s.name_ << ", position=" << s.position_ << ", velocity=" << s.velocity_
-    << ", effort=" << s.effort_ << ", command=" << s.command_ << ")";
+  o << "JointState(name=" << s.name_ << ", raw_position=" << s.raw_position_
+    << ", position_offset=" << s.position_offset_ << ", calibrated_position=" << s.calibrated_position_
+    << ", velocity=" << s.velocity_ << ", effort=" << s.effort_ << ", command=" << s.command_ << ")";
   return o;
 }
+typedef std::shared_ptr<JointState> JointStatePtr;
 
 struct ActuatorState
 {
@@ -54,3 +59,4 @@ inline std::ostream& operator<<(std::ostream& o, const ActuatorState& s)
     << ", effort=" << s.effort_ << ", command=" << s.command_ << ")";
   return o;
 }
+typedef std::shared_ptr<ActuatorState> ActuatorStatePtr;

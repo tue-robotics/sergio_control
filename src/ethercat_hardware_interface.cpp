@@ -32,7 +32,7 @@ EthercatHardwareInterface::EthercatHardwareInterface(
   }
 
   // 2. Get the actuators based on the description parsed from the URDF
-  for (auto actuator_state : transmission_manager_.actuator_states_)
+  for (auto actuator_state : transmission_manager_.getActuatorStates())
   {
     ROS_INFO("Getting actuator %s from ethercat actuators description ...", actuator_state->name_.c_str());
 
@@ -48,7 +48,14 @@ EthercatHardwareInterface::EthercatHardwareInterface(
     actuators_.push_back(EthercatActuator(ethercat_actuator->second, interface_, actuator_state));
   }
 
-  // 3. Finally register all interfaces to ROS control
+  // 3. Null all joints in the transmission manager
+  read(ros::Time::now(), ros::Duration());
+  for (auto joint_state : transmission_manager_.getJointStates())
+  {
+    transmission_manager_.calibrateJointPosition(joint_state->name_, 0);
+  }
+
+  // 4. Finally register all interfaces to ROS control
   transmission_manager_.registerInterfacesToROSControl(this);
 }
 
@@ -61,12 +68,12 @@ void EthercatHardwareInterface::read(const ros::Time&, const ros::Duration& peri
     actuator.read(period);
   }
 
-  transmission_manager_.propogateAcuatorStatesToJointStates();
+  transmission_manager_.propagateAcuatorStatesToJointStates();
 }
 
 void EthercatHardwareInterface::write(const ros::Time&, const ros::Duration&)
 {
-  transmission_manager_.propogateJointStatesToActuatorStates();
+  transmission_manager_.propagateJointStatesToActuatorStates();
 
   for (EthercatActuator& actuator : actuators_)
   {

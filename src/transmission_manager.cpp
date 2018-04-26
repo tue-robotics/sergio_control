@@ -74,8 +74,8 @@ void TransmissionManager::registerTransmission(
   for (transmission_interface::ActuatorInfo actuator_info : transmission_actuator_infos)
   {
     // Create a new actuator state and store this one
-    std::shared_ptr<ActuatorState> actuator_state(new ActuatorState(actuator_info.name_));
-    actuator_states_.push_back(actuator_state);
+    ActuatorStatePtr actuator_state(new ActuatorState(actuator_info.name_));
+    actuator_states_[actuator_info.name_] = actuator_state;
 
     // Expose the actuator state
     hardware_interface::ActuatorStateHandle actuator_state_handle(actuator_state->name_, &actuator_state->position_,
@@ -102,10 +102,10 @@ void TransmissionManager::registerTransmission(
   for (transmission_interface::JointInfo joint_info : transmission_joint_infos)
   {
     // Create a new actuator
-    std::shared_ptr<JointState> joint_state(new JointState(joint_info.name_));
+    JointStatePtr joint_state(new JointState(joint_info.name_));
 
     // Expose the joint state
-    hardware_interface::JointStateHandle joint_state_handle(joint_state->name_, &joint_state->position_,
+    hardware_interface::JointStateHandle joint_state_handle(joint_state->name_, &joint_state->calibrated_position_,
                                                             &joint_state->velocity_, &joint_state->effort_);
     joint_state_interface_.registerHandle(joint_state_handle);
 
@@ -113,7 +113,7 @@ void TransmissionManager::registerTransmission(
     joint_effort_interface_.registerHandle(hardware_interface::JointHandle(joint_state_handle, &joint_state->command_));
 
     // Required for transmission interface
-    joint_data.position.push_back(&joint_state->position_);
+    joint_data.position.push_back(&joint_state->raw_position_);  // Note that we pass the raw position here
     joint_data.velocity.push_back(&joint_state->velocity_);
     joint_data.effort.push_back(&joint_state->effort_);
     joint_command_data.effort.push_back(&joint_state->command_);
@@ -158,18 +158,64 @@ void TransmissionManager::registerInterfacesToROSControl(hardware_interface::Int
   interface_manager->registerInterface(&joint_to_actuator_effort_transmission_interface_);
 }
 
-void TransmissionManager::propogateAcuatorStatesToJointStates()
+void TransmissionManager::calibrateJointPosition(const std::string& joint_name, double real_joint_position)
+{
+  // Verify whether the joint is present in the joint states map
+  if (joint_states_.find(joint_name) == joint_states_.end())
+  {
+    throw std::runtime_error("Joint name '" + joint_name + "' not present in joint_states map");
+  }
+  else
+  {
+    joint_states_[joint_name]->position_offset_ = real_joint_position - joint_states_[joint_name]->raw_position_;
+  }
+}
+
+void TransmissionManager::propagateAcuatorStatesToJointStates()
 {
   // We read the state of the actuator and we need to propagate this to the corresponding joints
   actuator_to_joint_position_transmission_interface_.propagate();
   actuator_to_joint_velocity_transmission_interface_.propagate();
   actuator_to_joint_effort_transmission_interface_.propagate();
+
+  // Now propogate the joint offsets
+  for (auto joint_state : getJointStates())
+  {
+    joint_state->calibrated_position_ = joint_state->raw_position_ + joint_state->position_offset_;
+  }
 }
 
-void TransmissionManager::propogateJointStatesToActuatorStates()
+void TransmissionManager::propagateJointStatesToActuatorStates()
 {
   // We control the joint position and the controller outputs an effort for the joint, this transmission makes sure
   // that we propagate this joint effort to the corresponding actuators
   joint_to_actuator_effort_transmission_interface_.propagate();
 }
+
+//!
+//! \brief getMapItemsAsVector Helper function to return the items in a map as a vector
+//! \param map The input map
+//! \return Vector of all the items in the map
+//!
+template <typename K, typename V>
+std::vector<V> getMapItemsAsVector(const std::map<K, V>& map)
+{
+  std::vector<V> output;
+  for (auto iter : map)
+  {
+    output.push_back(iter.second);
+  }
+  return output;
+}
+
+std::vector<ActuatorStatePtr> TransmissionManager::getActuatorStates()
+{
+  return getMapItemsAsVector(actuator_states_);
+}
+
+std::vector<JointStatePtr> TransmissionManager::getJointStates()
+{
+  return getMapItemsAsVector(joint_states_);
+}
+
 }  // namespace transmission_manager

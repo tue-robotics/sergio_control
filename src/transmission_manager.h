@@ -36,24 +36,34 @@ public:
   void registerInterfacesToROSControl(hardware_interface::InterfaceManager* interface_manager);
 
   //!
-  //! \brief propogateAcuatorStatesToJointStates
+  //! \brief calibrateJointPosition Calibrates the joint position to the passed value
   //!
-  void propogateAcuatorStatesToJointStates();
+  //! Makes sure that the joint state position is set to the passed value. Required for external calibration
+  //!
+  //! \param joint_name The joint name
+  //! \param real_joint_position The real joint position
+  //!
+  void calibrateJointPosition(const std::string& joint_name, double real_joint_position);
 
   //!
-  //! \brief propogateJointStatesToActuatorStates
+  //! \brief propagateAcuatorStatesToJointStates
   //!
-  void propogateJointStatesToActuatorStates();
+  void propagateAcuatorStatesToJointStates();
 
   //!
-  //! \brief actuator_states_ State and commands of all ethercat actuators
+  //! \brief propagateJointStatesToActuatorStates
   //!
-  std::vector<std::shared_ptr<ActuatorState>> actuator_states_;
+  void propagateJointStatesToActuatorStates();
 
   //!
-  //! \brief joint_states_ State and commands of all registered joints
+  //! \brief getActuatorStates Returns the actuator states vector
   //!
-  std::vector<std::shared_ptr<JointState>> joint_states_;
+  std::vector<ActuatorStatePtr> getActuatorStates();
+
+  //!
+  //! \brief getJointStates Returns the joint states vector
+  //!
+  std::vector<JointStatePtr> getJointStates();
 
 private:
   //!
@@ -127,5 +137,15 @@ private:
   //! \brief transmissions_ All transmissions obtained via the URDF
   //!
   std::vector<boost::shared_ptr<transmission_interface::Transmission>> transmissions_;
+
+  //!
+  //! \brief actuator_states_ State and commands of all ethercat actuators
+  //!
+  std::map<std::string, ActuatorStatePtr> actuator_states_;
+
+  //!
+  //! \brief joint_states_ State and commands of all registered joints
+  //!
+  std::map<std::string, JointStatePtr> joint_states_;
 };
 }  // namespace transmission_manager

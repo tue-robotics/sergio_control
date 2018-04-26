@@ -48,7 +48,10 @@ public:
     int encoder_value = encoder_in_->read();
     state_->position_ =
         static_cast<double>(encoder_value) / description_.encoder_.encoder_counts_per_revolution_ * 2 * M_PI;
-    state_->velocity_ = (state_->position_ - last_position) / period.toSec();
+    if (period.toSec() >= 0)
+    {
+      state_->velocity_ = (state_->position_ - last_position) / period.toSec();
+    }
     ROS_DEBUG("Read actuator encoder value: %d, position: %.5f, velocity: %.5f from actuator %s", encoder_value,
               state_->position_, state_->velocity_, state_->name_.c_str());
   }

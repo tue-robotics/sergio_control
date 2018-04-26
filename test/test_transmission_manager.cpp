@@ -55,15 +55,15 @@ int main(int argc, char* argv[])
   transmission_manager::TransmissionManager transmission_manager(urdf_string);
 
   // First check if we can propagate the command on the joint to the command of the actuator
-  setJointStatesCommand(transmission_manager.joint_states_, 0.1);
-  transmission_manager.propogateJointStatesToActuatorStates();
-  printState(transmission_manager.joint_states_, transmission_manager.actuator_states_);
+  setJointStatesCommand(transmission_manager.getJointStates(), 0.1);
+  transmission_manager.propagateJointStatesToActuatorStates();
+  printState(transmission_manager.getJointStates(), transmission_manager.getActuatorStates());
 
-  setJointStatesCommand(transmission_manager.joint_states_, -0.1);
-  transmission_manager.propogateJointStatesToActuatorStates();
-  printState(transmission_manager.joint_states_, transmission_manager.actuator_states_);
+  setJointStatesCommand(transmission_manager.getJointStates(), -0.1);
+  transmission_manager.propagateJointStatesToActuatorStates();
+  printState(transmission_manager.getJointStates(), transmission_manager.getActuatorStates());
 
-  setActuatorStatesPosition(transmission_manager.actuator_states_, 3, 2, 1);
-  transmission_manager.propogateAcuatorStatesToJointStates();
-  printState(transmission_manager.joint_states_, transmission_manager.actuator_states_);
+  setActuatorStatesPosition(transmission_manager.getActuatorStates(), 3, 2, 1);
+  transmission_manager.propagateAcuatorStatesToJointStates();
+  printState(transmission_manager.getJointStates(), transmission_manager.getActuatorStates());
 }
