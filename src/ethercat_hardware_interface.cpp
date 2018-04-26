@@ -87,22 +87,54 @@ EthercatHardwareInterface::EthercatHardwareInterface(const std::string& interfac
 
   // Register transmission interfaces for joints to actuators
   registerInterface(&ros_control_interfaces_.joint_to_actuator_effort_transmission_interface_);
-}
 
-bool EthercatHardwareInterface::init(ros::NodeHandle &root_nh, ros::NodeHandle &robot_hw_nh)
-{
   //  Null all joints in the transmission manager
   read(ros::Time::now(), ros::Duration());
+  std::map<std::string, double> initial_calibration_data;
   for (auto joint_state : transmission_manager_.getJointStates())
   {
-    transmission_manager_.calibrateJointPosition(joint_state->name_, 0);
+    initial_calibration_data[joint_state->name_] = 0;
   }
+  joint_calibration_data_buffer_.writeFromNonRT(initial_calibration_data);
+
+  // Advertise the service server
+  ros::NodeHandle nh;
+  calibrate_srv_ = nh.advertiseService("calibrate", &EthercatHardwareInterface::calibrateSrv, this);
+}
+
+bool EthercatHardwareInterface::calibrateSrv(control_msgs::CalibrateRequest& req, control_msgs::CalibrateResponse&)
+{
+  if (req.name.size() != req.position.size())
+  {
+    ROS_ERROR("Name and position vector are not of same size");
+    return false;
+  }
+
+  std::map<std::string, double>& joint_calibration_data = *joint_calibration_data_buffer_.readFromNonRT();
+  for (size_t i = 0; i < req.name.size(); ++i)
+  {
+    if (joint_calibration_data.find(req.name[i]) == joint_calibration_data.end())
+    {
+      ROS_ERROR("Name %s not present in transmission manager!", req.name[i].c_str());
+      return false;
+    }
+    joint_calibration_data[req.name[i]] = req.position[i];
+  }
+
+  joint_calibration_data_buffer_.writeFromNonRT(joint_calibration_data);
   return true;
 }
 
 void EthercatHardwareInterface::read(const ros::Time&, const ros::Duration& period)
 {
   interface_->read();
+
+  // Process calibration data
+  std::map<std::string, double>& calibration_data = *joint_calibration_data_buffer_.readFromRT();
+  for (auto iter : calibration_data)
+  {
+    transmission_manager_.calibrateJointPosition(iter.first, iter.second);
+  }
 
   for (EthercatActuator& actuator : actuator_interfaces_)
   {
@@ -128,4 +160,5 @@ void EthercatHardwareInterface::write(const ros::Time&, const ros::Duration&)
 
   interface_->write();
 }
+
 }  // namespace ethercat_hardware_interface

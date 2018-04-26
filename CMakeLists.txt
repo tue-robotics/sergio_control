@@ -6,9 +6,11 @@ add_compile_options(-std=c++11 -Wall)
 
 find_package(catkin REQUIRED COMPONENTS
   controller_manager
+  control_msgs
   diagnostic_updater
   ethercat_interface
   hardware_interface
+  realtime_tools
   roscpp
   transmission_interface
 )

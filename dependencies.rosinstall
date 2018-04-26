@@ -1,3 +1,6 @@
 - git:
     local-name: ethercat_interface
     uri: https://github.com/tue-robotics/ethercat_interface
+- git:
+    local-name: control_msgs
+    uri: https://github.com/tue-robotics/control_msgs

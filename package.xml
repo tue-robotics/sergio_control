@@ -11,10 +11,12 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>controller_manager</depend>
+  <depend>control_msgs</depend>
   <depend>diagnostic_updater</depend>
   <depend>ethercat_interface</depend>
   <depend>hardware_interface</depend>
   <depend>transmission_interface</depend>
+  <depend>realtime_tools</depend>
   <depend>roscpp</depend>
 
   <exec_depend>joint_state_controller</exec_depend>

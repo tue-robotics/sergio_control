@@ -17,6 +17,10 @@
 
 #include "./ros_control_interfaces.h"
 
+#include <control_msgs/Calibrate.h>
+#include <ros/service_server.h>
+#include <realtime_tools/realtime_buffer.h>
+
 namespace ethercat_hardware_interface
 {
 class EthercatHardwareInterface : public hardware_interface::RobotHW
@@ -45,14 +49,6 @@ public:
   //! \brief write Write data to ethercat interface
   //!
   void write(const ros::Time& /*time*/, const ros::Duration& /*period*/);
-
-  //!
-  //! \brief init
-  //! \param root_nh
-  //! \param robot_hw_nh
-  //! \return
-  //!
-  bool init(ros::NodeHandle &root_nh, ros::NodeHandle &robot_hw_nh);
 
 private:
   //!
@@ -84,6 +80,11 @@ private:
   //! \brief actuators_ Holds the ethercat actuators and a pointer to the state
   //!
   std::vector<EthercatJointPositionInterface> absolute_joint_position_interfaces_;
+
+private:
+  ros::ServiceServer calibrate_srv_;
+  bool calibrateSrv(control_msgs::CalibrateRequest& req, control_msgs::CalibrateResponse&);
+  realtime_tools::RealtimeBuffer<std::map<std::string, double>> joint_calibration_data_buffer_;
 
 };
 }  // namespace ethercat_hardware_interface
