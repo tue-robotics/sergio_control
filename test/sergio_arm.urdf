@@ -1,10 +1,45 @@
 <?xml version="1.0"?>
 <robot name="sergio_arm">
 
+  <link name="base_link" >
+    <visual>
+      <origin xyz="0 0 0.5" rpy="0 0 0" />
+      <geometry>
+        <box size="0.09 0.09 1.0" />
+      </geometry>
+      <material name="Cyan">
+        <color rgba="0 1.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <joint name="torso_joint" type="fixed">
+      <origin xyz="0.0 0.0 1.0" rpy="0.0 -1.57 3.1415"/>
+      <parent link="base_link"/>
+      <child link="torso"/>
+  </joint>
+
+  <link name="torso">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.09 0.6 0.09" />
+      </geometry>
+      <material name="Cyan">
+        <color rgba="0 1.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <joint name="shoulder_mount_joint" type="fixed">
+      <origin xyz="0.0 -0.3 0.0" rpy="0.0 0.0 0.0"/>
+      <parent link="torso"/>
+      <child link="shoulder_mount"/>
+  </joint>
+  
   <link name="shoulder_mount" />
 
   <!-- Upper arm -->
-  
   <joint name="shoulder_yaw_joint" type="revolute">
     <origin xyz="0 0 0" rpy="-1.5708 -1.5708 0"/>
     <axis xyz="1 0 0"/>
@@ -23,15 +58,22 @@
     <child link="shoulder_link2"/>
   </joint>
 
+  <!-- Drive train: 
+  https://www.maxonmotor.com/maxon/view/product/358512
+  204687.0 / 2057.0 * 60.0 / 20.0 = 298.5226 
+  -->
+  <!-- ++: 1 correct, 1 false -->
+  <!-- +-: 1 correct, 1 false -->
+  <!-- -+ -->
   <transmission name="shoulder_yaw_pitch_transmission">
     <type>transmission_interface/DifferentialTransmission</type>
     <actuator name="shoulder_yaw_pitch_actuator1">
       <role>actuator1</role>
-      <mechanicalReduction>-1.0</mechanicalReduction>
+      <mechanicalReduction>-298.5226</mechanicalReduction>
     </actuator>
     <actuator name="shoulder_yaw_pitch_actuator2">
       <role>actuator2</role>
-      <mechanicalReduction>1.0</mechanicalReduction>
+      <mechanicalReduction>298.5226</mechanicalReduction>
     </actuator>
     <joint name="shoulder_yaw_joint">
       <role>joint1</role>
@@ -42,7 +84,7 @@
     <joint name="shoulder_pitch_joint">
       <role>joint2</role>
       <offset>0.0</offset>
-      <mechanicalReduction>-1.0</mechanicalReduction>
+      <mechanicalReduction>1.0</mechanicalReduction>
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
   </transmission>
@@ -50,27 +92,40 @@
   <link name="shoulder_link2" />
 
   <joint name="shoulder_roll_joint" type="revolute">
-    <origin xyz="0.0 0.0 0.0" rpy="-1.5708  0 0"/>
-    <axis xyz="0 -1 0"/>
+    <origin xyz="0.0 0.0 0.0" rpy="1.5708  0 0"/>
+    <axis xyz="0 1 0"/>
     <limit effort="13.4" velocity="1.0" lower="-1.57" upper="1.57" />
     <parent link="shoulder_link2"/>
     <child link="upper_arm"/>
   </joint>
 
+  <!-- Drive train: 
+  https://www.maxonmotor.com/maxon/view/product/358385
+  226223.0 / 3179.0 * 90.0/24.0 
+  -->
   <transmission name="shoulder_roll_transmission">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="shoulder_roll_joint">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="shoulder_roll_actuator">
-      <mechanicalReduction>33.0625</mechanicalReduction>
+      <mechanicalReduction>266.856</mechanicalReduction>
     </actuator>
   </transmission>
 
-  <link name="upper_arm" />
+  <link name="upper_arm" >
+    <visual>
+      <origin xyz="0 -0.15 0" rpy="1.57 0 0" />
+      <geometry>
+        <cylinder radius="0.05" length="0.3"/>
+      </geometry>
+      <material name="Cyan">
+        <color rgba="0 1.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
 
   <!-- Fore arm -->
-
   <joint name="elbow_pitch_joint" type="revolute">
     <origin xyz="0.01 -0.32 0.0" rpy="-1.5708 0 0"/> 
     <axis xyz="0 -1 0"/>
@@ -83,21 +138,26 @@
 
   <joint name="elbow_roll_joint" type="revolute">
     <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
-    <axis xyz="0 1 0"/>
+    <axis xyz="0 -1 0"/>
     <limit effort="4.5" velocity="1.0" lower="-1.83" upper="1.83"/>
     <parent link="elbow_link4"/>
     <child link="fore_arm"/>
   </joint>
 
+  <!-- Drive train: 
+  https://www.maxonmotor.com/maxon/view/product/gear/planetary/gp26/406764
+  http://www.hpcgears.com/pdf_c33/15.10-15.13.pdf (60 teeth, 4 starts)
+  3249.0 / 121.0 * 60.0 / 4.0 = 402.768595
+  -->
   <transmission name="elbow_pitch_roll_transmission">
     <type>transmission_interface/DifferentialTransmission</type>
     <actuator name="elbow_pitch_roll_actuator1">
       <role>actuator1</role>
-      <mechanicalReduction>-1.0</mechanicalReduction>
+      <mechanicalReduction>402.768595</mechanicalReduction>
     </actuator>
     <actuator name="elbow_pitch_roll_actuator2">
       <role>actuator2</role>
-      <mechanicalReduction>1.0</mechanicalReduction>
+      <mechanicalReduction>402.768595</mechanicalReduction>
     </actuator>
     <joint name="elbow_pitch_joint">
       <role>joint1</role>
@@ -108,11 +168,21 @@
     <joint name="elbow_roll_joint">
       <role>joint2</role>
       <offset>0.0</offset>
-      <mechanicalReduction>-1.0</mechanicalReduction>
+      <mechanicalReduction>1.0</mechanicalReduction>
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
   </transmission>
 
-  <link name="fore_arm" />
+  <link name="fore_arm" >
+    <visual>
+      <origin xyz="0 -0.15 0" rpy="1.57 0 0" />
+      <geometry>
+        <cylinder radius="0.05" length="0.3"/>
+      </geometry>
+      <material name="Cyan">
+        <color rgba="0 1.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
 
 </robot>

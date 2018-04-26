@@ -11,7 +11,7 @@ test_sergio_arm_joint_states:
       encoder:
         slave: 1
         channel: 1
-        encoder_counts_per_revolution: 16758 # -
+        encoder_counts_per_revolution: 2000  # 500 x 4
       motor:
         slave: 1
         channel: 1
@@ -20,7 +20,7 @@ test_sergio_arm_joint_states:
       encoder:
         slave: 1
         channel: 7
-        encoder_counts_per_revolution: 16758 # -
+        encoder_counts_per_revolution: 2000  # 500 x 4
       motor:
         slave: 1
         channel: 7
@@ -29,7 +29,7 @@ test_sergio_arm_joint_states:
       encoder:
         slave: 2
         channel: 1
-        encoder_counts_per_revolution: 3735 # -
+        encoder_counts_per_revolution: 2000 # -
       motor:
         slave: 1
         channel: 1
