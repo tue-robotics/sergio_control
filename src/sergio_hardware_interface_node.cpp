@@ -8,10 +8,12 @@
 #include <ros/ros.h>
 #include <controller_manager/controller_manager.h>
 
-#include "../src/ethercat_actuator.h"
-#include "../src/ethercat_actuator_parser.h"
-#include "../src/ethercat_interface_descriptions.h"
-#include "../src/ethercat_hardware_interface.h"
+#include "./ethercat_actuator.h"
+#include "./ethercat_actuator_parser.h"
+#include "./ethercat_interface_descriptions.h"
+#include "./sergio_hardware_interface.h"
+
+using namespace sergio_control;
 
 //!
 //! \brief controlThread Separate thread for running the controller
@@ -19,8 +21,7 @@
 //! \param robot Pointer to the robot hardare interface
 //! \param cm Controller manager interface to ROS control
 //!
-void controlThread(ros::Rate rate, ethercat_hardware_interface::EthercatHardwareInterface* robot,
-                   controller_manager::ControllerManager* cm)
+void controlThread(ros::Rate rate, SergioHardwareInterface* robot, controller_manager::ControllerManager* cm)
 {
   ros::Time last_cycle_time = ros::Time::now();
   while (ros::ok())
@@ -44,7 +45,7 @@ void controlThread(ros::Rate rate, ethercat_hardware_interface::EthercatHardware
 
 int main(int argc, char* argv[])
 {
-  ros::init(argc, argv, "test_hardware_interface");
+  ros::init(argc, argv, "sergio_hardware_interface_node");
 
   ros::NodeHandle local_nh("~");
   ros::Rate rate(local_nh.param("rate", 50));
@@ -67,9 +68,7 @@ int main(int argc, char* argv[])
 
   try
   {
-    ethercat_hardware_interface::EthercatHardwareInterface robot(ethernet_interface, urdf_string,
-                                                                 ethercat_actuators_description, "sergio_control",
-                                                                 "test_ethercat_hardware_interface");
+    SergioHardwareInterface robot(ethernet_interface, urdf_string, ethercat_actuators_description);
 
     controller_manager::ControllerManager cm(&robot);
 

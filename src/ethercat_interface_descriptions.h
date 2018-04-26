@@ -40,14 +40,15 @@ inline std::ostream& operator<<(std::ostream& o, const EthercatEncoderInterfaceD
   return o;
 }
 
-struct EthercatActuatorDescription
+struct EthercatMotorEncoderDescription
 {
   EthercatMotorInterfaceDescription motor_;
   EthercatEncoderInterfaceDescription encoder_;
 };
-inline std::ostream& operator<<(std::ostream& o, const EthercatActuatorDescription& a)
+inline std::ostream& operator<<(std::ostream& o, const EthercatMotorEncoderDescription& a)
 {
-  o << "EthercatActuatorDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ")";
+  o << "MotorEncoderDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ")";
   return o;
 }
+
 }  // namespace ethercat_hardware_interface
