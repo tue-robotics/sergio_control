@@ -84,6 +84,8 @@ private:
 private:
   ros::ServiceServer calibrate_srv_;
   bool calibrateSrv(control_msgs::CalibrateRequest& req, control_msgs::CalibrateResponse&);
+  std::map<std::string, double>* last_joint_calibration_data = 0;
+  std::map<std::string, double> initial_calibration_data_;
   realtime_tools::RealtimeBuffer<std::map<std::string, double>> joint_calibration_data_buffer_;
 
 };

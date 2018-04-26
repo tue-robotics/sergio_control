@@ -94,12 +94,11 @@ EthercatHardwareInterface::EthercatHardwareInterface(const std::string& interfac
 
   //  Null all joints in the transmission manager
   read(ros::Time::now(), ros::Duration());
-  std::map<std::string, double> initial_calibration_data;
   for (auto joint_state : transmission_manager_.getJointStates())
   {
-    initial_calibration_data[joint_state->name_] = 0;
+    initial_calibration_data_[joint_state->name_] = 0;
   }
-  joint_calibration_data_buffer_.writeFromNonRT(initial_calibration_data);
+  joint_calibration_data_buffer_.writeFromNonRT(initial_calibration_data_);
 
   // Advertise the service server
   ros::NodeHandle nh;
@@ -114,10 +113,10 @@ bool EthercatHardwareInterface::calibrateSrv(control_msgs::CalibrateRequest& req
     return false;
   }
 
-  std::map<std::string, double>& joint_calibration_data = *joint_calibration_data_buffer_.readFromNonRT();
+  std::map<std::string, double> joint_calibration_data;
   for (size_t i = 0; i < req.name.size(); ++i)
   {
-    if (joint_calibration_data.find(req.name[i]) == joint_calibration_data.end())
+    if (initial_calibration_data_.find(req.name[i]) == initial_calibration_data_.end())
     {
       ROS_ERROR("Name %s not present in transmission manager!", req.name[i].c_str());
       return false;
@@ -134,10 +133,14 @@ void EthercatHardwareInterface::read(const ros::Time&, const ros::Duration& peri
   interface_->read();
 
   // Process calibration data
-  std::map<std::string, double>& calibration_data = *joint_calibration_data_buffer_.readFromRT();
-  for (auto iter : calibration_data)
+  std::map<std::string, double>* calibration_data = joint_calibration_data_buffer_.readFromRT();
+  if (calibration_data != last_joint_calibration_data)
   {
-    transmission_manager_.calibrateJointPosition(iter.first, iter.second);
+    for (auto iter : *calibration_data)
+    {
+      transmission_manager_.calibrateJointPosition(iter.first, iter.second);
+    }
+    last_joint_calibration_data = calibration_data;
   }
 
   for (EthercatActuator& actuator : actuator_interfaces_)

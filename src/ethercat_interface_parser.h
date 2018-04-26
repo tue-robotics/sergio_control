@@ -192,7 +192,7 @@ inline std::map<std::string, EthercatJointPositionInterfaceDescription> getEther
 
   if (ethercat_joint_position_interfaces.empty())
   {
-    throw std::runtime_error("No ethercat_joint_position_interfaces found");
+    ROS_WARN("No ethercat_joint_position_interfaces found");
   }
 
   return ethercat_joint_position_interfaces;
