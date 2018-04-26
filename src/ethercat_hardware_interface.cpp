@@ -153,8 +153,11 @@ void EthercatHardwareInterface::read(const ros::Time&, const ros::Duration& peri
   transmission_manager_.propagateAcuatorStatesToJointStates();
 }
 
-void EthercatHardwareInterface::write(const ros::Time&, const ros::Duration&)
+void EthercatHardwareInterface::write(const ros::Time&, const ros::Duration& period)
 {
+  ros_control_interfaces_.effort_joint_saturation_joint_limits_interface_.enforceLimits(period);
+  ros_control_interfaces_.effort_joint_soft_limits_joint_limits_interface_.enforceLimits(period);
+
   transmission_manager_.propagateJointStatesToActuatorStates();
 
   for (EthercatActuator& actuator : actuator_interfaces_)

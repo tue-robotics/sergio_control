@@ -48,7 +48,7 @@ public:
   //!
   //! \brief write Write data to ethercat interface
   //!
-  void write(const ros::Time& /*time*/, const ros::Duration& /*period*/);
+  void write(const ros::Time& /*time*/, const ros::Duration& period);
 
 private:
   //!
