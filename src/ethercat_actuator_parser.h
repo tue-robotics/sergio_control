@@ -97,9 +97,9 @@ inline EthercatEncoderInterfaceDescription getEthercatEncoderInterfaceDescriptio
 //! \param param The XML RPC parameter
 //! \return Return a map from actuator names to descriptions
 //!
-inline std::map<std::string, EthercatMotorEncoderDescription> getEthercatActuatorsDescription(XmlRpc::XmlRpcValue param)
+inline std::map<std::string, EthercatActuatorDescription> getEthercatActuatorsDescription(XmlRpc::XmlRpcValue param)
 {
-  std::map<std::string, EthercatMotorEncoderDescription> ethercat_actuators_description;
+  std::map<std::string, EthercatActuatorDescription> ethercat_actuators_description;
   for (XmlRpc::XmlRpcValue::ValueStruct::const_iterator act_it = param.begin(); act_it != param.end(); ++act_it)
   {
     XmlRpc::XmlRpcValue actuator_name_xmlrpc = act_it->first;
@@ -121,7 +121,7 @@ inline std::map<std::string, EthercatMotorEncoderDescription> getEthercatActuato
       throw std::runtime_error("An actuator should have a motor and encoder key");
     }
 
-    EthercatMotorEncoderDescription description;
+    EthercatActuatorDescription description;
     description.encoder_ = getEthercatEncoderInterfaceDescription(actuator_description_xmlrpc["encoder"]);
     description.motor_ = getEthercatMotorInterfaceDescription(actuator_description_xmlrpc["motor"]);
     ethercat_actuators_description[actuator_name] = description;

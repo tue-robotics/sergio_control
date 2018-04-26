@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     ethercat_interface::InterfacePtr interface(
           new ethercat_interface::Interface(getParam("ethercat_interface", std::string("eno1"), &local_nh)));
 
-    ethercat_hardware_interface::EthercatMotorEncoderDescription description;
+    ethercat_hardware_interface::EthercatActuatorDescription description;
     description.motor_.slave_ = getParam("motor_slave", 1, &local_nh);
     description.motor_.channel_ = getParam("motor_channel", 0, &local_nh);
     description.motor_.scale_factor_ = getParam("motor_scale_factor", 22.801652754998294, &local_nh);

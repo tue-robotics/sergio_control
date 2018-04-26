@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   std::string ethernet_interface = local_nh.param("ethercat_interface", std::string("eno1"));
   std::string urdf_string = local_nh.param("/robot_description", std::string(""));
 
-  std::map<std::string, ethercat_hardware_interface::EthercatMotorEncoderDescription> ethercat_actuators_description;
+  std::map<std::string, ethercat_hardware_interface::EthercatActuatorDescription> ethercat_actuators_description;
   try
   {
     XmlRpc::XmlRpcValue ethercat_actuators_param;

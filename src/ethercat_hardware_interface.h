@@ -17,9 +17,6 @@
 
 namespace ethercat_hardware_interface
 {
-
-typedef std::map<std::string, EthercatMotorEncoderDescription> EthercatActuatorDescriptionMap;
-
 class EthercatHardwareInterface : public hardware_interface::RobotHW
 {
 public:
@@ -32,7 +29,7 @@ public:
   //! \param executable_name Name of the executable within the ROS package
   //!
   EthercatHardwareInterface(const std::string& interface_name, const std::string& urdf_string,
-                            const EthercatActuatorDescriptionMap& ethercat_actuators_description,
+                            const std::map<std::string, EthercatActuatorDescription>& ethercat_actuators_description,
                             const std::string& package_name, const std::string& executable_name);
 
   //!
