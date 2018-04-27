@@ -28,9 +28,15 @@ target_link_libraries(transmission_manager
   ${catkin_LIBRARIES}
 )
 
+add_library(io_manager src/io_manager.cpp)
+target_link_libraries(io_manager
+  ${catkin_LIBRARIES}
+)
+
 add_library(ethercat_hardware_interface src/ethercat_hardware_interface.cpp)
 target_link_libraries(ethercat_hardware_interface
   transmission_manager
+  io_manager
   ${catkin_LIBRARIES}
 )
 

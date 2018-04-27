@@ -12,11 +12,26 @@
 
 namespace ethercat_hardware_interface
 {
+
+template <typename T>
+std::vector<std::string> getNameVector(const std::vector<T>& vector)
+{
+  std::vector<std::string> output;
+  for (auto item : vector)
+  {
+    output.push_back(item.name_);
+  }
+  return output;
+}
+
 EthercatHardwareInterface::EthercatHardwareInterface(const std::string& interface_name, const std::string& urdf_string,
     const std::map<std::string, EthercatActuatorInterfaceDescription>& actuator_interface_description,
     const std::map<std::string, EthercatJointPositionInterfaceDescription>& absolute_joint_position_interfaces_description,
+    const std::vector<EthercatInterfaceDescription>& input_interfaces_description,
+    const std::vector<EthercatInterfaceDescription>& output_interfaces_description,
     const std::string& package_name, const std::string& executable_name) :
-  transmission_manager_(urdf_string, &ros_control_interfaces_)
+  transmission_manager_(urdf_string, &ros_control_interfaces_),
+  io_manager_(getNameVector(input_interfaces_description), getNameVector(output_interfaces_description), 50)
 {
   // 1. Connect to the ethercat interface
   try
@@ -70,6 +85,17 @@ EthercatHardwareInterface::EthercatHardwareInterface(const std::string& interfac
     ros_control_interfaces_.joint_state_interface_.registerHandle(
           hardware_interface::JointStateHandle(joint_state->name_, &joint_state->calibrated_position_,
                                                &joint_state->velocity_, &joint_state->effort_));
+  }
+
+  // 4. Initialize ethercat with the IO manager
+  for (auto description : input_interfaces_description)
+  {
+    input_interfaces_.push_back(
+          EthercatInputInterface(description, interface_, io_manager_.getInput(description.name_)));
+  }
+  for (auto description : output_interfaces_description)
+  {
+    ROS_WARN("Output interface for %s not implemented", description.name_.c_str());
   }
 
   // Register the actuator interfaces for actuator state (output) and actuator effort (input)
@@ -128,7 +154,7 @@ bool EthercatHardwareInterface::calibrateSrv(control_msgs::CalibrateRequest& req
   return true;
 }
 
-void EthercatHardwareInterface::read(const ros::Time&, const ros::Duration& period)
+void EthercatHardwareInterface::read(const ros::Time& time, const ros::Duration& period)
 {
   interface_->read();
 
@@ -152,6 +178,12 @@ void EthercatHardwareInterface::read(const ros::Time&, const ros::Duration& peri
   {
     joint_position_interface.read();
   }
+
+  for (EthercatInputInterface& input_interface : input_interfaces_)
+  {
+    input_interface.read();
+  }
+  io_manager_.publish(time);
 
   transmission_manager_.propagateAcuatorStatesToJointStates();
 }

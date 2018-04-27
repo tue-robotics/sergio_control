@@ -79,12 +79,41 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  std::vector<EthercatInterfaceDescription> ethercat_input_interfaces;
+  try
+  {
+    XmlRpc::XmlRpcValue ethercat_input_interfaces_param;
+    local_nh.getParam("ethercat_input_interfaces", ethercat_input_interfaces_param);
+    ethercat_input_interfaces = getEthercatInterfaceDescription(ethercat_input_interfaces_param);
+  }
+  catch (const std::exception& e)
+  {
+    ROS_FATAL_STREAM("Failed to parse ~ethercat_input_interfaces parameter: " << e.what());
+    return 1;
+  }
+
+  std::vector<EthercatInterfaceDescription> ethercat_output_interfaces;
+  try
+  {
+    XmlRpc::XmlRpcValue ethercat_output_interfaces_param;
+    local_nh.getParam("ethercat_output_interfaces", ethercat_output_interfaces_param);
+    ethercat_output_interfaces = getEthercatInterfaceDescription(ethercat_output_interfaces_param);
+  }
+  catch (const std::exception& e)
+  {
+    ROS_FATAL_STREAM("Failed to parse ~ethercat_output_interfaces parameter: " << e.what());
+    return 1;
+  }
+
   try
   {
     EthercatHardwareInterface robot(ethernet_interface, urdf_string,
 
                                     ethercat_actuator_interfaces,
                                     ethercat_joint_position_interfaces,
+
+                                    ethercat_input_interfaces,
+                                    ethercat_output_interfaces,
 
                                     "sergio_control", "test_ethercat_hardware_interface");
 

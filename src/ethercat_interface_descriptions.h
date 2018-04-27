@@ -15,9 +15,16 @@ namespace ethercat_hardware_interface
 {
 struct EthercatInterfaceDescription
 {
+  std::string name_ = "";
   size_t slave_ = 0;    // Ethercat slave id
   size_t channel_ = 0;  // Ethercat channel id
 };
+inline std::ostream& operator<<(std::ostream& o, const EthercatInterfaceDescription& a)
+{
+  o << "EthercatInterfaceDescription(slave=" << a.slave_ << ", channel=" << a.channel_;
+  return o;
+}
+
 struct EthercatMotorInterfaceDescription : EthercatInterfaceDescription
 {
   double scale_factor_ = 0;  // Output to Nm mapping (determined by motor, amplifier or current control)

@@ -198,4 +198,31 @@ inline std::map<std::string, EthercatJointPositionInterfaceDescription> getEther
   return ethercat_joint_position_interfaces;
 }
 
+inline std::vector<EthercatInterfaceDescription> getEthercatInterfaceDescription(XmlRpc::XmlRpcValue param)
+{
+  std::vector<EthercatInterfaceDescription> ethercat_interface_description;
+  for (XmlRpc::XmlRpcValue::ValueStruct::const_iterator act_it = param.begin(); act_it != param.end(); ++act_it)
+  {
+    XmlRpc::XmlRpcValue io_name_xmlrpc = act_it->first;
+    XmlRpc::XmlRpcValue io_xmlrpc = act_it->second;
+    if (io_name_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeString)
+    {
+      throw std::runtime_error("Key should be of type string");
+    }
+    if (io_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeStruct)
+    {
+      throw std::runtime_error("Value should be of type struct");
+    }
+
+    EthercatInterfaceDescription description;
+    description.name_ = static_cast<std::string>(io_name_xmlrpc);
+    getSlaveAndChannel(io_xmlrpc, &description.slave_, &description.channel_);
+    ethercat_interface_description.push_back(description);
+
+    ROS_INFO_STREAM("Parsed " << description);
+  }
+
+  return ethercat_interface_description;
+}
+
 }  // namespace ethercat_hardware_interface

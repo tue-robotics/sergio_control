@@ -16,6 +16,9 @@ test_sergio_arm_joint_states:
         slave: 1
         channel: 1
         scale_factor: 6.41 # -
+      enable_motor:
+        slave: 1
+        channel: 1
     shoulder_yaw_pitch_actuator2:
       encoder:
         slave: 1
@@ -78,4 +81,9 @@ test_sergio_arm_joint_states:
       channel: 25
       scale_factor: 1.0
       offset: 0.0
+  ethercat_input_interfaces:
+    line_voltage:
+      slave: 1
+      channel: 28
+  ethercat_output_interfaces: {}
   rate: 500

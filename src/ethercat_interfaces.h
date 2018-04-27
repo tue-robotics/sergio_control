@@ -88,4 +88,54 @@ private:
   ethercat_interface::InputPtr position_in_;
 };
 
+class EthercatOutputInterface
+{
+public:
+  EthercatOutputInterface(const EthercatInterfaceDescription& description,
+                          ethercat_interface::InterfacePtr interface, double* state)
+    : description_(description)
+  {
+    ROS_INFO("Registering EthercatOutputInterface on slave %zu and channel %zu ...",
+             description.slave_, description.channel_);
+    out_ = interface->getSlave(description.slave_).getOutput(description.channel_);
+    ROS_INFO("EthercatOutputInterface initialized");
+  }
+
+  bool write()
+  {
+    return out_->write(*state_);
+  }
+
+  EthercatInterfaceDescription description_;
+  double* state_;
+
+private:
+  ethercat_interface::OutputPtr out_;
+};
+
+class EthercatInputInterface
+{
+public:
+  EthercatInputInterface(const EthercatInterfaceDescription& description,
+                         ethercat_interface::InterfacePtr interface, double* state)
+    : description_(description), state_(state)
+  {
+    ROS_INFO("Registering EthercatInputInterfaceDescription in interface on slave %zu and channel %zu ...",
+             description.slave_, description.channel_);
+    in_ = interface->getSlave(description.slave_).getInput(description.channel_);
+    ROS_INFO("EthercatJointPositionInterface initialized");
+  }
+
+  void read()
+  {
+    *state_ = in_->read();
+  }
+
+  EthercatInterfaceDescription description_;
+  double* state_;
+
+private:
+  ethercat_interface::InputPtr in_;
+};
+
 }  // namespace ethercat_hardware_interface

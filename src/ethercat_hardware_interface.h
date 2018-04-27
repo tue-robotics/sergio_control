@@ -14,6 +14,7 @@
 #include "./ethercat_interface_descriptions.h"
 #include "./ethercat_interfaces.h"
 #include "./transmission_manager.h"
+#include "./io_manager.h"
 
 #include "./ros_control_interfaces.h"
 
@@ -38,12 +39,14 @@ public:
   EthercatHardwareInterface(const std::string& interface_name, const std::string& urdf_string,
                             const std::map<std::string, EthercatActuatorInterfaceDescription>& actuator_interface_description,
                             const std::map<std::string, EthercatJointPositionInterfaceDescription>& absolute_joint_position_interfaces_description,
+                            const std::vector<EthercatInterfaceDescription>& input_interfaces_description,
+                            const std::vector<EthercatInterfaceDescription>& output_interfaces_description,
                             const std::string& package_name, const std::string& executable_name);
 
   //!
   //! \brief read Read data from ethercat interface
   //!
-  void read(const ros::Time& /*time*/, const ros::Duration& period);
+  void read(const ros::Time& time, const ros::Duration& period);
 
   //!
   //! \brief write Write data to ethercat interface
@@ -87,6 +90,11 @@ private:
   std::map<std::string, double>* last_joint_calibration_data = 0;
   std::map<std::string, double> initial_calibration_data_;
   realtime_tools::RealtimeBuffer<std::map<std::string, double>> joint_calibration_data_buffer_;
+
+private:
+  io_manager::IOManager io_manager_;
+  std::vector<EthercatInputInterface> input_interfaces_;
+  std::vector<EthercatOutputInterface> output_interfaces_;
 
 };
 }  // namespace ethercat_hardware_interface
