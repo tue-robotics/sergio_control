@@ -120,7 +120,7 @@ private:
 class EthercatOutputInterface
 {
 public:
-  EthercatOutputInterface(const EthercatInterfaceDescription& description,
+  EthercatOutputInterface(const EthercatOutputInterfaceDescription& description,
                           ethercat_interface::InterfacePtr interface, double* state)
     : description_(description), state_(state)
   {
@@ -132,11 +132,11 @@ public:
 
   bool write()
   {
-    ROS_DEBUG("Writing ethercat output interface, value: %.4f", *state_);
+    ROS_DEBUG_STREAM(description_ << " - Writing value: " << *state_);
     return out_->write(*state_);
   }
 
-  EthercatInterfaceDescription description_;
+  EthercatOutputInterfaceDescription description_;
   double* state_;
 
 private:

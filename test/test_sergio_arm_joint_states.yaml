@@ -103,7 +103,7 @@ test_sergio_arm_joint_states:
       slave: 1
       channel: 28
   ethercat_output_interfaces:
-    motor_command_1:
-      slave: 1
+    shoulder_roll_joint_enable:
+      slave: 2
       channel: 0
       default_value: 0.0
