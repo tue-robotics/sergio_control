@@ -128,6 +128,43 @@ bool EthercatHardwareInterface::calibrateSrv(control_msgs::CalibrateRequest& req
   return true;
 }
 
+void EthercatHardwareInterface::doSwitch(const std::list<hardware_interface::ControllerInfo>& start_list,
+                                         const std::list<hardware_interface::ControllerInfo>& stop_list)
+{
+  ROS_INFO("Stopping the following controllers:");
+  for (auto controller_info : stop_list)
+  {
+    ROS_INFO("- Controller %s of type %s. Claimed resources:", controller_info.name.c_str(), controller_info.type.c_str());
+    for (auto claimed_resource : controller_info.claimed_resources)
+    {
+      ROS_INFO("  - Claimed resource hardware interface: %s", claimed_resource.hardware_interface.c_str());
+      for (auto resource : claimed_resource.resources)
+      {
+        ROS_INFO("    - Resource: %s", resource.c_str());
+      }
+    }
+  }
+
+  ROS_INFO("Starting the following controllers:");
+  for (auto controller_info : start_list)
+  {
+    ROS_INFO("- Controller %s of type %s. Claimed resources:", controller_info.name.c_str(), controller_info.type.c_str());
+    for (auto claimed_resource : controller_info.claimed_resources)
+    {
+      ROS_INFO("  - Claimed resource hardware interface: %s", claimed_resource.hardware_interface.c_str());
+      for (auto resource : claimed_resource.resources)
+      {
+        ROS_INFO("    - Resource: %s", resource.c_str());
+        std::set<std::string>& actuator_names = transmission_manager_.getJointActuatorNames(resource);
+        for (auto actuator_name : actuator_names)
+        {
+          ROS_INFO("Need to enable %s", actuator_name.c_str());
+        }
+      }
+    }
+  }
+}
+
 void EthercatHardwareInterface::read(const ros::Time&, const ros::Duration& period)
 {
   interface_->read();

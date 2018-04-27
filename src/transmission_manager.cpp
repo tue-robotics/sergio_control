@@ -88,6 +88,7 @@ void TransmissionManager::registerTransmission(
   // Register all actuators
   transmission_interface::ActuatorData actuator_data;
   transmission_interface::ActuatorData actuator_command_data;
+  std::set<std::string> actuator_names;
 
   for (transmission_interface::ActuatorInfo actuator_info : transmission_actuator_infos)
   {
@@ -109,6 +110,9 @@ void TransmissionManager::registerTransmission(
     actuator_data.velocity.push_back(&actuator_state->velocity_);
     actuator_data.effort.push_back(&actuator_state->effort_);
     actuator_command_data.effort.push_back(&actuator_state->command_);
+
+    // Keep track of actuator names
+    actuator_names.insert(actuator_info.name_);
 
     ROS_INFO("Registered state and command interface for actuator '%s'", actuator_info.name_.c_str());
   }
@@ -153,6 +157,9 @@ void TransmissionManager::registerTransmission(
           joint_limits_interface::EffortJointSaturationHandle(joint_handle, limits));
     ros_control_interfaces_->effort_joint_soft_limits_joint_limits_interface_.registerHandle(
           joint_limits_interface::EffortJointSoftLimitsHandle(joint_handle, limits, soft_limits));
+
+    // Update joint actuator map
+    joint_actuator_map_[joint_info.name_] = actuator_names;
 
     ROS_INFO("Registered state and command interface for joint '%s'", joint_info.name_.c_str());
   }
@@ -235,6 +242,13 @@ std::vector<ActuatorStatePtr> TransmissionManager::getActuatorStates()
 std::vector<JointStatePtr> TransmissionManager::getJointStates()
 {
   return getMapItemsAsVector(joint_states_);
+}
+
+std::set<std::string>& TransmissionManager::getJointActuatorNames(const std::string& joint_name)
+{
+  // ToDo: check for presence?
+  // ToDo: make stuff const/return copy?
+  return joint_actuator_map_[joint_name];
 }
 
 }  // namespace transmission_manager
