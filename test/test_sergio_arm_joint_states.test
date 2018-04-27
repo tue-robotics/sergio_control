@@ -1,6 +1,8 @@
 <launch>
 
     <arg name="ethercat_interface" default="eno1"/>
+    <arg name="debug" default="false"/>
+    <arg name="rate" default="500" />
 
     <rosparam file="$(find sergio_control)/test/test_sergio_arm_joint_states.yaml" command="load" />
 
@@ -8,6 +10,8 @@
 
     <node name="test_sergio_arm_joint_states" pkg="sergio_control" type="test_ethercat_hardware_interface" output="screen">
         <param name="ethercat_interface" value="$(arg ethercat_interface)" />
+        <param name="debug" value="$(arg debug)" />
+        <param name="rate" value="$(arg rate)" />
     </node>
 
     <!-- Load the default controllers -->

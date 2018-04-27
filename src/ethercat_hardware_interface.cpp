@@ -24,14 +24,28 @@ std::vector<std::string> getNameVector(const std::vector<T>& vector)
   return output;
 }
 
+template <typename T>
+std::vector<double> getDefaultValueVector(const std::vector<T>& vector)
+{
+  std::vector<double> output;
+  for (auto item : vector)
+  {
+    output.push_back(item.default_value_);
+  }
+  return output;
+}
+
 EthercatHardwareInterface::EthercatHardwareInterface(const std::string& interface_name, const std::string& urdf_string,
     const std::map<std::string, EthercatActuatorInterfaceDescription>& actuator_interface_description,
     const std::map<std::string, EthercatJointPositionInterfaceDescription>& absolute_joint_position_interfaces_description,
     const std::vector<EthercatInterfaceDescription>& input_interfaces_description,
-    const std::vector<EthercatInterfaceDescription>& output_interfaces_description,
+    const std::vector<EthercatOutputInterfaceDescription>& output_interfaces_description,
     const std::string& package_name, const std::string& executable_name) :
   transmission_manager_(urdf_string, &ros_control_interfaces_),
-  io_manager_(getNameVector(input_interfaces_description), getNameVector(output_interfaces_description), 50)
+  io_manager_(getNameVector(input_interfaces_description),
+              getNameVector(output_interfaces_description),
+              getDefaultValueVector(output_interfaces_description),
+              50)
 {
   // 1. Connect to the ethercat interface
   try
@@ -95,7 +109,8 @@ EthercatHardwareInterface::EthercatHardwareInterface(const std::string& interfac
   }
   for (auto description : output_interfaces_description)
   {
-    ROS_WARN("Output interface for %s not implemented", description.name_.c_str());
+    output_interfaces_.push_back(
+          EthercatOutputInterface(description, interface_, io_manager_.getOutput(description.name_)));
   }
 
   // Register the actuator interfaces for actuator state (output) and actuator effort (input)
@@ -229,9 +244,14 @@ void EthercatHardwareInterface::write(const ros::Time&, const ros::Duration& per
 
   transmission_manager_.propagateJointStatesToActuatorStates();
 
+  io_manager_.updateOutputs();
   for (auto& name_actuator_pair : actuator_interfaces_)
   {
     name_actuator_pair.second.write();
+  }
+  for (auto& output_interface : output_interfaces_)
+  {
+    output_interface.write();
   }
 
   interface_->write();

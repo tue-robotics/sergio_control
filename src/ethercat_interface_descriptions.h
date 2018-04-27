@@ -13,6 +13,7 @@
 
 namespace ethercat_hardware_interface
 {
+
 struct EthercatInterfaceDescription
 {
   std::string name_ = "";
@@ -21,7 +22,18 @@ struct EthercatInterfaceDescription
 };
 inline std::ostream& operator<<(std::ostream& o, const EthercatInterfaceDescription& a)
 {
-  o << "EthercatInterfaceDescription(slave=" << a.slave_ << ", channel=" << a.channel_;
+  o << "EthercatInterfaceDescription(slave=" << a.slave_ << ", channel=" << a.channel_ << ")";
+  return o;
+}
+
+struct EthercatOutputInterfaceDescription : EthercatInterfaceDescription
+{
+  double default_value_ = 0;
+};
+inline std::ostream& operator<<(std::ostream& o, const EthercatOutputInterfaceDescription& a)
+{
+  o << "EthercatOutputInterfaceDescription(slave=" << a.slave_ << ", channel=" << a.channel_
+    << ", default_value=" << a.default_value_ << ")";
   return o;
 }
 

@@ -102,5 +102,8 @@ test_sergio_arm_joint_states:
     line_voltage:
       slave: 1
       channel: 28
-  ethercat_output_interfaces: {}
-  rate: 500
+  ethercat_output_interfaces:
+    motor_command_1:
+      slave: 1
+      channel: 0
+      default_value: 0.0

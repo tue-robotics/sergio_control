@@ -40,7 +40,7 @@ public:
                             const std::map<std::string, EthercatActuatorInterfaceDescription>& actuator_interface_description,
                             const std::map<std::string, EthercatJointPositionInterfaceDescription>& absolute_joint_position_interfaces_description,
                             const std::vector<EthercatInterfaceDescription>& input_interfaces_description,
-                            const std::vector<EthercatInterfaceDescription>& output_interfaces_description,
+                            const std::vector<EthercatOutputInterfaceDescription>& output_interfaces_description,
                             const std::string& package_name, const std::string& executable_name);
 
   //!

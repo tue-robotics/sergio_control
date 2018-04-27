@@ -132,7 +132,7 @@ inline EthercatJointPositionInterfaceDescription getEthercatJointPositionInterfa
     throw std::runtime_error("An EthercatJointPositionInterfaceDescription should have a offset key");
   }
   XmlRpc::XmlRpcValue offset_xmlrpc = param["offset"];
-  if (scale_factor_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeDouble)
+  if (offset_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeDouble)
   {
     throw std::runtime_error("offset should be a double");
   }
@@ -219,9 +219,9 @@ inline std::map<std::string, EthercatJointPositionInterfaceDescription> getEther
   return ethercat_joint_position_interfaces;
 }
 
-inline std::vector<EthercatInterfaceDescription> getEthercatInterfaceDescription(XmlRpc::XmlRpcValue param)
+inline std::vector<EthercatInterfaceDescription> getEthercatInterfacesDescription(XmlRpc::XmlRpcValue param)
 {
-  std::vector<EthercatInterfaceDescription> ethercat_interface_description;
+  std::vector<EthercatInterfaceDescription> ethercat_interfaces_description;
   for (XmlRpc::XmlRpcValue::ValueStruct::const_iterator act_it = param.begin(); act_it != param.end(); ++act_it)
   {
     XmlRpc::XmlRpcValue io_name_xmlrpc = act_it->first;
@@ -238,12 +238,51 @@ inline std::vector<EthercatInterfaceDescription> getEthercatInterfaceDescription
     EthercatInterfaceDescription description;
     description.name_ = static_cast<std::string>(io_name_xmlrpc);
     getSlaveAndChannel(io_xmlrpc, &description.slave_, &description.channel_);
-    ethercat_interface_description.push_back(description);
+    ethercat_interfaces_description.push_back(description);
 
     ROS_INFO_STREAM("Parsed " << description);
   }
 
-  return ethercat_interface_description;
+  return ethercat_interfaces_description;
+}
+
+inline std::vector<EthercatOutputInterfaceDescription> getEthercatOutputInterfaceDescription(XmlRpc::XmlRpcValue param)
+{
+  std::vector<EthercatOutputInterfaceDescription> ethercat_output_interfaces_description;
+  for (XmlRpc::XmlRpcValue::ValueStruct::const_iterator act_it = param.begin(); act_it != param.end(); ++act_it)
+  {
+    XmlRpc::XmlRpcValue name_xmlrpc = act_it->first;
+    XmlRpc::XmlRpcValue description_xmlrpc = act_it->second;
+    if (name_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeString)
+    {
+      throw std::runtime_error("Key should be of type string");
+    }
+    if (description_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeStruct)
+    {
+      throw std::runtime_error("Value should be of type struct");
+    }
+
+    EthercatOutputInterfaceDescription description;
+    description.name_ = static_cast<std::string>(name_xmlrpc);
+    getSlaveAndChannel(description_xmlrpc, &description.slave_, &description.channel_);
+
+    if (!description_xmlrpc.hasMember("default_value"))
+    {
+      throw std::runtime_error("An EthercatOutputInterfaceDescription should have a default_value key");
+    }
+    XmlRpc::XmlRpcValue default_value_xmlrpc = description_xmlrpc["default_value"];
+    if (default_value_xmlrpc.getType() != XmlRpc::XmlRpcValue::TypeDouble)
+    {
+      throw std::runtime_error("default_value should be a double");
+    }
+    description.default_value_ = static_cast<double>(default_value_xmlrpc);
+
+    ROS_INFO_STREAM("Parsed " << description);
+
+    ethercat_output_interfaces_description.push_back(description);
+  }
+
+  return ethercat_output_interfaces_description;
 }
 
 }  // namespace ethercat_hardware_interface

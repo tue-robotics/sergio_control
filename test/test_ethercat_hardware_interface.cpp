@@ -49,6 +49,16 @@ int main(int argc, char* argv[])
   ros::init(argc, argv, "test_hardware_interface");
 
   ros::NodeHandle local_nh("~");
+
+  // Configure logging
+  if (local_nh.param("debug", false))
+  {
+    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
+    {
+      ros::console::notifyLoggerLevelsChanged();
+    }
+  }
+
   ros::Rate rate(local_nh.param("rate", 50));
   std::string ethernet_interface = local_nh.param("ethercat_interface", std::string("eno1"));
   std::string urdf_string = local_nh.param("/robot_description", std::string(""));
@@ -84,7 +94,7 @@ int main(int argc, char* argv[])
   {
     XmlRpc::XmlRpcValue ethercat_input_interfaces_param;
     local_nh.getParam("ethercat_input_interfaces", ethercat_input_interfaces_param);
-    ethercat_input_interfaces = getEthercatInterfaceDescription(ethercat_input_interfaces_param);
+    ethercat_input_interfaces = getEthercatInterfacesDescription(ethercat_input_interfaces_param);
   }
   catch (const std::exception& e)
   {
@@ -92,12 +102,12 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  std::vector<EthercatInterfaceDescription> ethercat_output_interfaces;
+  std::vector<EthercatOutputInterfaceDescription> ethercat_output_interfaces;
   try
   {
     XmlRpc::XmlRpcValue ethercat_output_interfaces_param;
     local_nh.getParam("ethercat_output_interfaces", ethercat_output_interfaces_param);
-    ethercat_output_interfaces = getEthercatInterfaceDescription(ethercat_output_interfaces_param);
+    ethercat_output_interfaces = getEthercatOutputInterfaceDescription(ethercat_output_interfaces_param);
   }
   catch (const std::exception& e)
   {

@@ -122,7 +122,7 @@ class EthercatOutputInterface
 public:
   EthercatOutputInterface(const EthercatInterfaceDescription& description,
                           ethercat_interface::InterfacePtr interface, double* state)
-    : description_(description)
+    : description_(description), state_(state)
   {
     ROS_INFO("Registering EthercatOutputInterface on slave %zu and channel %zu ...",
              description.slave_, description.channel_);
@@ -132,6 +132,7 @@ public:
 
   bool write()
   {
+    ROS_DEBUG("Writing ethercat output interface, value: %.4f", *state_);
     return out_->write(*state_);
   }
 
