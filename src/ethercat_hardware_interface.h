@@ -53,6 +53,29 @@ public:
   //!
   void write(const ros::Time& /*time*/, const ros::Duration& period);
 
+  /**
+   * Perform (in realtime) all necessary hardware interface switches in order to start and stop the given controllers.
+   * Start and stop list are disjoint. The feasability was checked in prepareSwitch() beforehand.
+   */
+  void doSwitch(const std::list<hardware_interface::ControllerInfo>& start_list,
+                const std::list<hardware_interface::ControllerInfo>& stop_list);
+
+private:
+
+  //!
+  //! \brief setActuatorEnabled Enables or disables the actuator designated by the provided name
+  //! \param actuator_name identifies the actuator
+  //! \param enable indicates whether to enable or disable the designated actuator
+  //!
+  void setActuatorEnabled(const std::string& actuator_name, bool enable);
+
+  //!
+  //! \brief setJointEnabled Enables or disables all actuators corresponding to the joint
+  //! \param joint_name identifies the joint
+  //! \param enable indicates whether to enable or disable the corresponding actuators
+  //!
+  void setJointEnabled(const std::string& joint_name, bool enable);
+
 private:
   //!
   //! \brief interface_ IO interface
@@ -71,7 +94,7 @@ private:
   //!
   //! \brief actuators_ Holds the ethercat actuators and a pointer to the state
   //!
-  std::vector<EthercatActuator> actuator_interfaces_;
+  std::map<std::string, EthercatActuator> actuator_interfaces_;
 
 private:
   //!

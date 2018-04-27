@@ -4,6 +4,11 @@ joint_state_controller:
    type:         joint_state_controller/JointStateController
    publish_rate: 50
 
+shoulder_roll_position_controller:
+   type: effort_controllers/JointPositionController
+   joint: shoulder_roll_joint
+   pid: {p: 2.0, i: 0.0, d: 0.06}
+
 # Expose the actuator / joint interfaces to ROS control
 test_sergio_arm_joint_states:
   ethercat_actuator_interfaces:
@@ -16,9 +21,9 @@ test_sergio_arm_joint_states:
         slave: 1
         channel: 1
         scale_factor: 6.41 # -
-      enable_motor:
+      enable:
         slave: 1
-        channel: 1
+        channel: 0
     shoulder_yaw_pitch_actuator2:
       encoder:
         slave: 1
@@ -28,33 +33,45 @@ test_sergio_arm_joint_states:
         slave: 1
         channel: 7
         scale_factor: 6.41 # 
+      enable:
+        slave: 1
+        channel: 6
     shoulder_roll_actuator:
       encoder:
         slave: 2
         channel: 1
         encoder_counts_per_revolution: 2000 # -
       motor:
-        slave: 1
+        slave: 2
         channel: 1
         scale_factor: 6.41 # 
+      enable:
+        slave: 2
+        channel: 0
     elbow_pitch_roll_actuator1:
       encoder:
         slave: 2
         channel: 4
         encoder_counts_per_revolution: 2000 # -
       motor:
-        slave: 1
+        slave: 2
         channel: 4
         scale_factor: 6.41 # 
+      enable:
+        slave: 2
+        channel: 3
     elbow_pitch_roll_actuator2:
       encoder:
         slave: 2
         channel: 7
         encoder_counts_per_revolution: 2000 # -
       motor:
-        slave: 1
-        channel: 0
+        slave: 2
+        channel: 7
         scale_factor: 6.41 # 
+      enable:
+        slave: 2
+        channel: 6
   ethercat_absolute_joint_position_interfaces:
     shoulder_pitch_joint:
       slave: 1

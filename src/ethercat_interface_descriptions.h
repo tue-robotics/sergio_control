@@ -47,14 +47,25 @@ inline std::ostream& operator<<(std::ostream& o, const EthercatEncoderInterfaceD
   return o;
 }
 
+struct EthercatEnableInterfaceDescription : EthercatInterfaceDescription
+{
+  bool need_enable_ = true;
+};
+inline std::ostream& operator<<(std::ostream& o, const EthercatEnableInterfaceDescription& a)
+{
+    o << "EthercatEnableInterfaceDescription(slave=" << a.slave_ << ", channel=" << a.channel_ << ", enable=" << a.need_enable_ << ")";
+  return o;
+}
+
 struct EthercatActuatorInterfaceDescription
 {
   EthercatMotorInterfaceDescription motor_;
   EthercatEncoderInterfaceDescription encoder_;
+  EthercatEnableInterfaceDescription enable_;
 };
 inline std::ostream& operator<<(std::ostream& o, const EthercatActuatorInterfaceDescription& a)
 {
-  o << "EthercatActuatorInterfaceDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ")";
+  o << "EthercatActuatorInterfaceDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ", enable=" << a.enable_ << ")";
   return o;
 }
 

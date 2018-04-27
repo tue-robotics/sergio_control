@@ -26,6 +26,11 @@ public:
     ROS_INFO("Registering digital in interface on slave %d and channel %d ...", (int)description.encoder_.slave_,
              (int)description.encoder_.channel_);
     encoder_in_ = interface->getSlave(description.encoder_.slave_).getInput(description.encoder_.channel_);
+
+    if (description.enable_.need_enable_)
+    {
+      enable_out_ = interface->getSlave(description.enable_.slave_).getOutput(description.enable_.channel_);
+    }
     ROS_INFO("Actuator initialized");
   }
 
@@ -56,9 +61,33 @@ public:
               state_->position_, state_->velocity_, state_->name_.c_str());
   }
 
+  //!
+  //! \brief setEnabled enables or disables the hardware
+  //! \param enable indicates whether to enable or disable
+  //! \return
+  //!
+  bool setEnabled(bool enable)
+  {
+    // If enable out not defined, always return true
+    if (!enable_out_)
+    {
+      return true;
+    }
+
+    if (enable)
+    {
+      return enable_out_->write(1.0);
+    }
+    else
+    {
+      return enable_out_->write(0.0);
+    }
+  }
+
 private:
   ethercat_interface::OutputPtr analogue_out_;
   ethercat_interface::InputPtr encoder_in_;
+  ethercat_interface::OutputPtr enable_out_;
 };
 
 class EthercatJointPositionInterface

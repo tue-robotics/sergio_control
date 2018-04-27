@@ -73,6 +73,13 @@ public:
   //!
   std::map<std::string, JointStatePtr> joint_states_;
 
+  //!
+  //! \brief getJointActuatorNames returns all actuator names corresponding to the requested joint name
+  //! \param joint_name joint name
+  //! \return
+  //!
+  std::set<std::string> &getJointActuatorNames(const std::string& joint_name);
+
 private:
   //!
   //! \brief registerTransmission Register a transmission for joint, actuator combinations
@@ -113,5 +120,10 @@ private:
   //! \brief transmissions_ All transmissions obtained via the URDF
   //!
   std::vector<boost::shared_ptr<transmission_interface::Transmission>> transmissions_;
+
+  //!
+  //! \brief joint_actuator_map_ Maps joint names to corresponding actuator names
+  //!
+  std::map<std::string, std::set<std::string> > joint_actuator_map_;
 };
 }  // namespace transmission_manager

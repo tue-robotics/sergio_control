@@ -61,7 +61,7 @@ EthercatHardwareInterface::EthercatHardwareInterface(const std::string& interfac
     }
 
     auto actuator_state = transmission_manager_.actuator_states_[name];
-    actuator_interfaces_.push_back(EthercatActuator(description, interface_, actuator_state));
+    actuator_interfaces_.insert({name, EthercatActuator(description, interface_, actuator_state)});
   }
 
   // 3. Load the joint position interfaces based on the provided description
@@ -154,6 +154,40 @@ bool EthercatHardwareInterface::calibrateSrv(control_msgs::CalibrateRequest& req
   return true;
 }
 
+void EthercatHardwareInterface::doSwitch(const std::list<hardware_interface::ControllerInfo>& start_list,
+                                         const std::list<hardware_interface::ControllerInfo>& stop_list)
+{
+  ROS_INFO("Stopping the following controllers:");
+  for (auto controller_info : stop_list)
+  {
+    ROS_INFO("- Controller %s of type %s. Claimed resources:", controller_info.name.c_str(), controller_info.type.c_str());
+    for (auto claimed_resource : controller_info.claimed_resources)
+    {
+      ROS_INFO("  - Claimed resource hardware interface: %s", claimed_resource.hardware_interface.c_str());
+      for (auto resource : claimed_resource.resources)
+      {
+        ROS_INFO("    - Resource: %s", resource.c_str());
+        setJointEnabled(resource, false);
+      }
+    }
+  }
+
+  ROS_INFO("Starting the following controllers:");
+  for (auto controller_info : start_list)
+  {
+    ROS_INFO("- Controller %s of type %s. Claimed resources:", controller_info.name.c_str(), controller_info.type.c_str());
+    for (auto claimed_resource : controller_info.claimed_resources)
+    {
+      ROS_INFO("  - Claimed resource hardware interface: %s", claimed_resource.hardware_interface.c_str());
+      for (auto resource : claimed_resource.resources)
+      {
+        ROS_INFO("    - Resource: %s", resource.c_str());
+        setJointEnabled(resource, true);
+      }
+    }
+  }
+}
+
 void EthercatHardwareInterface::read(const ros::Time& time, const ros::Duration& period)
 {
   interface_->read();
@@ -169,9 +203,9 @@ void EthercatHardwareInterface::read(const ros::Time& time, const ros::Duration&
     last_joint_calibration_data = calibration_data;
   }
 
-  for (EthercatActuator& actuator : actuator_interfaces_)
+  for (auto& name_actuator_pair : actuator_interfaces_)
   {
-    actuator.read(period);
+    name_actuator_pair.second.read(period);
   }
 
   for (EthercatJointPositionInterface& joint_position_interface : absolute_joint_position_interfaces_)
@@ -195,12 +229,35 @@ void EthercatHardwareInterface::write(const ros::Time&, const ros::Duration& per
 
   transmission_manager_.propagateJointStatesToActuatorStates();
 
-  for (EthercatActuator& actuator : actuator_interfaces_)
+  for (auto& name_actuator_pair : actuator_interfaces_)
   {
-    actuator.write();
+    name_actuator_pair.second.write();
   }
 
   interface_->write();
+}
+
+void EthercatHardwareInterface::setActuatorEnabled(const std::string& actuator_name, bool enable)
+{
+  auto name_actuator_iter = actuator_interfaces_.find(actuator_name);
+  if (name_actuator_iter != actuator_interfaces_.end())
+  {
+    name_actuator_iter->second.setEnabled(enable);
+  }
+  else
+  {
+    throw std::runtime_error("Cannot enable/disable actuator " + actuator_name + ": actuator unknown");
+  }
+}
+
+void EthercatHardwareInterface::setJointEnabled(const std::string& joint_name, bool enable)
+{
+  std::set<std::string>& actuator_names = transmission_manager_.getJointActuatorNames(joint_name);
+  for (auto actuator_name : actuator_names)
+  {
+    ROS_INFO("Need to set %s to %d", actuator_name.c_str(), enable);
+    setActuatorEnabled(actuator_name, enable);
+  }
 }
 
 }  // namespace ethercat_hardware_interface

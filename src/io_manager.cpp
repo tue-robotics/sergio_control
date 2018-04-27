@@ -38,7 +38,7 @@ double* IOManager::getInput(const std::string& name)
 void IOManager::publish(const ros::Time& time)
 {
   // Throttle
-  if (publish_rate_ > 0.0 && ealtime_publisher_.msg_.header.stamp + ros::Duration(1.0 / publish_rate_) < time)
+  if (publish_rate_ > 0.0 && realtime_publisher_.msg_.header.stamp + ros::Duration(1.0 / publish_rate_) < time)
   {
     if (realtime_publisher_.trylock())
     {
