@@ -18,6 +18,12 @@ struct EthercatInterfaceDescription
   size_t slave_ = 0;    // Ethercat slave id
   size_t channel_ = 0;  // Ethercat channel id
 };
+inline std::ostream& operator<<(std::ostream& o, const EthercatInterfaceDescription& a)
+{
+  o << "EthercatMotorInterfaceDescription(slave=" << a.slave_ << ", channel=" << a.channel_ << ")";
+  return o;
+}
+
 struct EthercatMotorInterfaceDescription : EthercatInterfaceDescription
 {
   double scale_factor_ = 0;  // Output to Nm mapping (determined by motor, amplifier or current control)
@@ -40,14 +46,25 @@ inline std::ostream& operator<<(std::ostream& o, const EthercatEncoderInterfaceD
   return o;
 }
 
+struct EthercatEnableInterfaceDescription : EthercatInterfaceDescription
+{
+  bool need_enable_ = true;
+};
+inline std::ostream& operator<<(std::ostream& o, const EthercatEnableInterfaceDescription& a)
+{
+    o << "EthercatEnableInterfaceDescription(slave=" << a.slave_ << ", channel=" << a.channel_ << ", enable=" << a.need_enable_ << ")";
+  return o;
+}
+
 struct EthercatActuatorInterfaceDescription
 {
   EthercatMotorInterfaceDescription motor_;
   EthercatEncoderInterfaceDescription encoder_;
+  EthercatEnableInterfaceDescription enable_;
 };
 inline std::ostream& operator<<(std::ostream& o, const EthercatActuatorInterfaceDescription& a)
 {
-  o << "EthercatActuatorInterfaceDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ")";
+  o << "EthercatActuatorInterfaceDescription(motor=" << a.motor_ << ", encoder=" << a.encoder_ << ", enable=" << a.enable_ << ")";
   return o;
 }
 

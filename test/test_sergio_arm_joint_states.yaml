@@ -48,6 +48,9 @@ test_sergio_arm_joint_states:
         slave: 1
         channel: 4
         scale_factor: 6.41 # 
+      enable:
+        slave: 2
+        channel: 3
     elbow_pitch_roll_actuator2:
       encoder:
         slave: 2

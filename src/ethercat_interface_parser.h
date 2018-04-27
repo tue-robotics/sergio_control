@@ -69,6 +69,25 @@ inline EthercatMotorInterfaceDescription getEthercatMotorInterfaceDescription(Xm
 }
 
 //!
+//! \brief getEthercatEnableInterfaceDescription Returns the enable interface description
+//! \param param XML RPC param of the motor
+//! \return Description
+//!
+inline EthercatEnableInterfaceDescription getEthercatEnableInterfaceDescription(XmlRpc::XmlRpcValue param)
+{
+  EthercatEnableInterfaceDescription description;
+  try
+  {
+    getSlaveAndChannel(param, &description.slave_, &description.channel_);
+  }
+  catch (std::runtime_error)
+  {
+    description.need_enable_ = false;
+  }
+  return description;
+}
+
+//!
 //! \brief getEthercatEncoderInterfaceDescription Returns the encoder interface description
 //! \param param XML RPC param of the encoder
 //! \return Description
@@ -152,8 +171,10 @@ inline std::map<std::string, EthercatActuatorInterfaceDescription> getEthercatAc
     }
 
     EthercatActuatorInterfaceDescription description;
+    ROS_INFO_STREAM("Parsing " << actuator_name);
     description.encoder_ = getEthercatEncoderInterfaceDescription(actuator_description_xmlrpc["encoder"]);
     description.motor_ = getEthercatMotorInterfaceDescription(actuator_description_xmlrpc["motor"]);
+    description.enable_ = getEthercatEnableInterfaceDescription(actuator_description_xmlrpc["enable"]);
     ethercat_actuators_description[actuator_name] = description;
 
     ROS_INFO_STREAM("Parsed " << actuator_name << ": " << description);
