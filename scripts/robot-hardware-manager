@@ -1,0 +1,26 @@
+#!/usr/bin/python
+
+# ROS
+import rospy
+
+# Robot manager
+from sergio_control import HardwareManager
+
+if __name__ == "__main__":
+
+    # Start ROS
+    rospy.init_node("hardware_manager")
+
+    # Construct the hardware manager
+    rospy.loginfo("Construct HW manager")
+    manager = HardwareManager()
+
+    # Sleep to make sure all topics are connected
+    rospy.sleep(rospy.Duration(0.5))
+
+    # Start spinning
+    rospy.loginfo("Start spinning")
+    rospy.spin()
+
+    # Shut down
+    rospy.loginfo("Shutting down")

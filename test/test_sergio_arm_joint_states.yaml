@@ -44,7 +44,7 @@ test_sergio_arm_joint_states:
       motor:
         slave: 2
         channel: 1
-        scale_factor: 6.41 # 
+        scale_factor: 38.61003861003861  # Motor constant = 25.9 mNm/A
       enable:
         slave: 2
         channel: 0
