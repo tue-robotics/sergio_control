@@ -1,6 +1,6 @@
 # sergio_control
 
-[![CI](https://github.com/tue-robotics/sergio_control/workflows/CI/badge.svg)](https://github.com/tue-robotics/sergio_control/actions)
+[![CI](https://github.com/tue-robotics/sergio_control/actions/workflows/main.yml/badge.svg)](https://github.com/tue-robotics/sergio_control/actions/workflows/main.yml)
 
 Control SERGIO with ROS Control
 
